@@ -1,0 +1,23 @@
+{
+  "installation": {
+    "version": "22.6.1",
+    "plugins": {
+      "@nx/docker": "22.6.1"
+    }
+  },
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "analytics": false,
+  "plugins": [
+    {
+      "plugin": "@nx/docker",
+      "options": {
+        "buildTarget": {
+          "name": "docker:build"
+        },
+        "runTarget": {
+          "name": "docker:run"
+        }
+      }
+    }
+  ]
+}
