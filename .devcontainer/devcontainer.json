@@ -1,12 +1,7 @@
 {
   "name": "Monorepo Dev Container",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "args": {
-      "TZ": "${localEnv:TZ:America/New_York}",
-      "ZSH_IN_DOCKER_VERSION": "1.2.0"
-    }
-  },
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
   "features": {
     "ghcr.io/devcontainers/features/node:1": {},
     "ghcr.io/devcontainers/features/dotnet:2": {},
@@ -17,7 +12,6 @@
     "ghcr.io/devcontainers-extra/features/nx-npm:1": {},
     "ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {}
   },
-  "runArgs": ["--cap-add=NET_ADMIN", "--cap-add=NET_RAW"],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -60,7 +54,7 @@
     "CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
     "POWERLEVEL9K_DISABLE_GITSTATUS": "true"
   },
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
+  "forwardPorts": [8080],
   "workspaceFolder": "/workspace",
   "postStartCommand": "sudo /usr/local/bin/init-firewall.sh",
   "waitFor": "postStartCommand"
