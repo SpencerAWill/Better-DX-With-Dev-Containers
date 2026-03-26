@@ -1,0 +1,71 @@
+# npm
+registry.npmjs.org
+
+# Docker Hub (required for docker-in-docker)
+registry-1.docker.io
+auth.docker.io
+index.docker.io
+production.cloudflare.docker.com
+
+# Anthropic / Claude
+api.anthropic.com
+statsig.anthropic.com
+statsig.com
+
+# Sentry
+sentry.io
+
+# GitHub (github.com and api.github.com IPs are covered by the meta IP ranges in the script,
+# but githubusercontent.com subdomains and other services need explicit DNS resolution)
+codeload.github.com
+uploads.github.com
+github-releases.githubusercontent.com
+*.githubusercontent.com
+
+# VS Code
+marketplace.visualstudio.com
+vscode.blob.core.windows.net
+update.code.visualstudio.com
+vscode.dev
+# VS Code extension downloads CDN (wildcard - resolved dynamically via dnsmasq)
+*.gallerycdn.vsassets.io
+
+# Azure - authentication
+login.microsoftonline.com
+login.microsoft.com
+login.live.com
+account.microsoft.com
+
+# Azure - authentication CDN (wildcard - resolved dynamically via dnsmasq)
+*.aadcdn.msftauth.net
+*.aadcdn.msftauthimages.net
+*.aadcdn.msauthimages.net
+*.logincdn.msftauth.net
+*.msauth.net
+*.microsoftonline-p.com
+
+# Azure - documentation (linked from extension UI and CLI help)
+learn.microsoft.com
+go.microsoft.com
+
+# Azure - management & graph API
+management.azure.com
+management.core.windows.net
+graph.microsoft.com
+graph.windows.net
+
+# Azure - Functions + storage (wildcard - resolved dynamically via dnsmasq)
+*.azurewebsites.net
+*.core.windows.net
+# Azure Container Registry (wildcard - resolved dynamically via dnsmasq)
+*.azurecr.io
+
+# NuGet (.NET package restore)
+api.nuget.org
+globalcdn.nuget.org
+
+# Rust / Cargo
+crates.io
+static.crates.io
+index.crates.io
+static.rust-lang.org
