@@ -3,7 +3,13 @@
     "version": "22.6.1",
     "plugins": {
       "@nx/docker": "22.6.1",
-      "@nx/vite": "22.6.1"
+      "@nx/dotnet": "22.6.1",
+      "@nx/eslint": "22.6.1",
+      "@nx/expo": "22.6.1",
+      "@nx/jest": "22.6.1",
+      "@nx/playwright": "22.6.1",
+      "@nx/vite": "22.6.1",
+      "@nx/vitest": "22.6.1"
     }
   },
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
