@@ -53,7 +53,8 @@
       "options": {
         "targetName": "e2e"
       }
-    }
+    },
+    "@nx/dotnet"
   ],
   "generators": {
     "@nx/react": {
@@ -71,5 +72,14 @@
         "linter": "eslint"
       }
     }
+  },
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"],
+    "production": [
+      "default",
+      "!{projectRoot}/**/*.Tests/**/*",
+      "!{projectRoot}/**/bin/**/*",
+      "!{projectRoot}/**/obj/**/*"
+    ]
   }
 }

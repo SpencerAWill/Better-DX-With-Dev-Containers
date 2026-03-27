@@ -21,6 +21,9 @@ importers:
       '@nx/devkit':
         specifier: 22.6.1
         version: 22.6.1(nx@22.6.1(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
+      '@nx/dotnet':
+        specifier: 22.6.1
+        version: 22.6.1(nx@22.6.1(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
       '@nx/eslint':
         specifier: 22.6.1
         version: 22.6.1(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@zkochan/js-yaml@0.0.7)(eslint@9.39.4(jiti@2.4.2))(nx@22.6.1(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
@@ -1246,6 +1249,9 @@ packages:
     resolution: {integrity: sha512-/mwG9zWY1phsWvMKzP0yZ4pE6aH0kLH31DuCYj4eLbhuUu0STL3xSdjPPzhDHf71R4K3YnuvG97e2qiGDbG5Qw==}
     peerDependencies:
       nx: '>= 21 <= 23 || ^22.0.0-0'
+
+  '@nx/dotnet@22.6.1':
+    resolution: {integrity: sha512-vdbEdqPNzMiWPbedUXPvQJ3YtyZcTequlDBWHf8Xg1uY/wpslJ+PLOwUtTfZO2aWwbmBXHvYspUqKGvylYSv5w==}
 
   '@nx/eslint-plugin@22.6.1':
     resolution: {integrity: sha512-3j9YYUM9aaXxxbbrHiVYc9jJ+q4eXVrlB0n392xO6wQUi4HgQgjBM4LIAr105pKeNfuEshA8xdhdu6ZV2fnQAA==}
@@ -6659,6 +6665,14 @@ snapshots:
       semver: 7.7.4
       tslib: 2.8.1
       yargs-parser: 21.1.1
+
+  '@nx/dotnet@22.6.1(nx@22.6.1(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))':
+    dependencies:
+      '@nx/devkit': 22.6.1(nx@22.6.1(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
+      ignore: 7.0.5
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - nx
 
   '@nx/eslint-plugin@22.6.1(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@typescript-eslint/parser@8.57.2(eslint@9.39.4(jiti@2.4.2))(typescript@5.9.3))(eslint-config-prettier@10.1.8(eslint@9.39.4(jiti@2.4.2)))(eslint@9.39.4(jiti@2.4.2))(nx@22.6.1(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))(typescript@5.9.3)':
     dependencies:

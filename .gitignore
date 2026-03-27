@@ -9,3 +9,7 @@ node_modules
 .claude/settings.local.json
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
+# .NET
+**/bin/
+**/obj/
+/artifacts/
