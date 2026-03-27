@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/apps/">
-    <Project Path="apps/api/API.csproj" />
+    <Project Path="apps/api/Project.API.csproj" />
   </Folder>
   <Folder Name="/libs/">
     <Project Path="libs/Project.Data.EFCore.Migrations/Project.Data.EFCore.Migrations.csproj" />
