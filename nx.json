@@ -2,7 +2,8 @@
   "installation": {
     "version": "22.6.1",
     "plugins": {
-      "@nx/docker": "22.6.1"
+      "@nx/docker": "22.6.1",
+      "@nx/vite": "22.6.1"
     }
   },
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
@@ -17,6 +18,20 @@
         "runTarget": {
           "name": "docker:run"
         }
+      }
+    },
+    {
+      "plugin": "@nx/vite/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "testTargetName": "test",
+        "serveTargetName": "serve",
+        "devTargetName": "dev",
+        "previewTargetName": "preview",
+        "serveStaticTargetName": "serve-static",
+        "typecheckTargetName": "typecheck",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
       }
     }
   ]

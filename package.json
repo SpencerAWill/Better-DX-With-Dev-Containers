@@ -9,5 +9,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@10.33.0",
+  "devDependencies": {
+    "@nx/vite": "22.6.1",
+    "@nx/web": "22.6.1",
+    "@vitest/ui": "~4.0.0",
+    "jiti": "2.4.2",
+    "vite": "^7.0.0",
+    "vitest": "~4.0.0"
+  },
+  "dependencies": {}
 }
