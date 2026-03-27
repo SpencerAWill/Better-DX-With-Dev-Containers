@@ -2,4 +2,7 @@
   <Folder Name="/apps/">
     <Project Path="apps/api/API.csproj" />
   </Folder>
+  <Folder Name="/libs/">
+    <Project Path="libs/Project.Data.EFCore/Project.Data.EFCore.csproj" />
+  </Folder>
 </Solution>
