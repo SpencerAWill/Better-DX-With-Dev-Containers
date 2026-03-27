@@ -6,13 +6,7 @@ ENV TZ="$TZ"
 # Install additional tools not included in the base image
 RUN apt-get update && apt-get install -y --no-install-recommends \
   fzf \
-  iptables \
-  ipset \
-  iproute2 \
-  dnsutils \
   jq \
-  aggregate \
-  dnsmasq \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Persist bash history.
@@ -22,9 +16,8 @@ RUN mkdir /commandhistory \
   && echo "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
      >> /home/vscode/.bashrc
 
-# Create workspace and config directories and set permissions
-RUN mkdir -p /workspace /home/vscode/.claude && \
-  chown -R vscode:vscode /workspace /home/vscode/.claude
+# Create workspace directory
+RUN mkdir -p /workspace && chown -R vscode:vscode /workspace
 
 WORKDIR /workspace
 
@@ -48,13 +41,6 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
   -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
   -x
 
-# Install Claude Code (native installation)
-RUN curl -fsSL https://claude.ai/install.sh | bash
-
-# Copy and set up firewall script
-COPY init-firewall.sh allowed-domains.txt /usr/local/bin/
-USER root
-RUN chmod +x /usr/local/bin/init-firewall.sh && \
-  echo "vscode ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/dev-firewall && \
-  chmod 0440 /etc/sudoers.d/dev-firewall
-USER vscode
+# Install Claude Code
+RUN curl -fsSL https://claude.ai/install.sh | bash && \
+  mkdir -p /home/vscode/.claude

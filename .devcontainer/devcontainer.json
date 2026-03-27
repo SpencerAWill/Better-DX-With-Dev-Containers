@@ -3,23 +3,19 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
   "features": {
-    "ghcr.io/devcontainers/features/node:1": {},
-    "ghcr.io/devcontainers/features/dotnet:2": {},
-    "ghcr.io/devcontainers/features/azure-cli:1": {},
-    "ghcr.io/devcontainers/features/rust:1": {},
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers-extra/features/nx-npm:1": {},
-    "ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {}
+    "ghcr.io/devcontainers/features/node:1": {}, // install node.js SDK
+    "ghcr.io/devcontainers/features/dotnet:2": {}, // install .NET SDK
+    "ghcr.io/devcontainers/features/azure-cli:1": {}, // install Azure CLI
+    "ghcr.io/devcontainers/features/rust:1": {}, // install Rust SDK
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}, // install docker into the dev container
+    "ghcr.io/devcontainers-extra/features/nx-npm:1": {} // install Nx monorepo tool
   },
   "customizations": {
     "vscode": {
       "extensions": [
-        "anthropic.claude-code",
         "nrwl.angular-console",
         "ms-dotnettools.csdevkit",
         "rust-lang.rust-analyzer",
-        "ms-azuretools.vscode-azurefunctions",
         "ms-azuretools.vscode-docker",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode"
@@ -45,7 +41,7 @@
   },
   "remoteUser": "vscode",
   "mounts": [
-    "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
+    "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume", // mount the command history
     "source=claude-code-config-${devcontainerId},target=/home/vscode/.claude,type=volume",
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.azure,target=/home/vscode/.azure,type=bind,consistency=cached"
   ],
@@ -54,8 +50,5 @@
     "CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
     "POWERLEVEL9K_DISABLE_GITSTATUS": "true"
   },
-  "forwardPorts": [8080],
-  "workspaceFolder": "/workspace",
-  "postStartCommand": "sudo /usr/local/bin/init-firewall.sh",
-  "waitFor": "postStartCommand"
+  "workspaceFolder": "/workspace"
 }

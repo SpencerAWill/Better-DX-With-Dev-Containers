@@ -7,23 +7,6 @@ services:
         TZ: ${TZ:-America/New_York}
         ZSH_IN_DOCKER_VERSION: "1.2.0"
     init: true
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
     volumes:
       - ..:/workspace:cached
     command: sleep infinity
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.1
-    command: start-dev
-    network_mode: service:devcontainer
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:9000/health/ready || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
