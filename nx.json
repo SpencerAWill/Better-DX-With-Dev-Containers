@@ -9,7 +9,8 @@
       "@nx/jest": "22.6.1",
       "@nx/playwright": "22.6.1",
       "@nx/vite": "22.6.1",
-      "@nx/vitest": "22.6.1"
+      "@nx/vitest": "22.6.1",
+      "@monodon/rust": "2.3.0"
     }
   },
   "$schema": "./.nx/installation/node_modules/nx/schemas/nx-schema.json",
@@ -82,7 +83,8 @@
       "options": {
         "targetName": "test"
       }
-    }
+    },
+    "@monodon/rust"
   ],
   "generators": {
     "@nx/react": {
