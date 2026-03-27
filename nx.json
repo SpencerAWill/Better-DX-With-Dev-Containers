@@ -12,7 +12,7 @@
       "@nx/vitest": "22.6.1"
     }
   },
-  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "$schema": "./.nx/installation/node_modules/nx/schemas/nx-schema.json",
   "analytics": false,
   "plugins": [
     {
