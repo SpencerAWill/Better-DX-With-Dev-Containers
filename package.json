@@ -12,10 +12,12 @@
   "packageManager": "pnpm@10.33.0",
   "devDependencies": {
     "@eslint/js": "^9.8.0",
+    "@expo/cli": "~54.0.16",
     "@nx/devkit": "22.6.1",
     "@nx/dotnet": "22.6.1",
     "@nx/eslint": "22.6.1",
     "@nx/eslint-plugin": "22.6.1",
+    "@nx/expo": "22.6.1",
     "@nx/js": "22.6.1",
     "@nx/playwright": "22.6.1",
     "@nx/react": "22.6.1",
@@ -45,6 +47,8 @@
     "eslint-plugin-react-hooks": "5.0.0",
     "jiti": "2.4.2",
     "jsdom": "~22.1.0",
+    "metro-config": "~0.83.0",
+    "metro-resolver": "~0.83.0",
     "postcss": "8.4.38",
     "prettier": "~3.6.2",
     "tailwindcss": "3.4.3",
@@ -55,7 +59,9 @@
     "vitest": "~4.0.0"
   },
   "dependencies": {
+    "expo": "~54.0.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-native": "0.81.5"
   }
 }
