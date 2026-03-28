@@ -4,7 +4,7 @@
   "*.{yml,yaml}": ["prettier --write"],
   "Dockerfile": ["hadolint"],
   "docker-compose.yml": ["prettier --write"],
-  "*.{css,scss,less}": ["stylelint --fix", "prettier --write"],
+  "*.{css,scss,less}": ["prettier --write"],
   "*.{md,mdx}": ["markdownlint --fix", "prettier --write"],
   "*.sh": ["shellcheck"],
   "*": ["prettier --write --ignore-unknown"]

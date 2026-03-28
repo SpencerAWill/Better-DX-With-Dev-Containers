@@ -6,7 +6,8 @@
     "ghcr.io/devcontainers/features/node:1": {}, // Installs Node.js, npm, and other tools
     "ghcr.io/dhoeric/features/hadolint:1": {}, // Installs Hadolint for linting Dockerfiles
     "ghcr.io/devcontainers-extra/features/shellcheck:1": {}, // Installs ShellCheck for linting shell scripts
-    "ghcr.io/devcontainers-extra/features/markdownlint-cli2:1": {} // Installs markdownlint-cli2 for linting Markdown files
+    "ghcr.io/devcontainers-extra/features/markdownlint-cli": {}, // Installs markdownlint-cli for linting Markdown files
+    "ghcr.io/devcontainers-extra/features/prettier:1": {} // Installs prettier for code formatting
   },
 
   "customizations": {
@@ -20,6 +21,16 @@
   },
 
   "remoteUser": "vscode",
+
+  "forwardPorts": [
+    5173 // Forward the webapp Vite development server port
+  ],
+  "portsAttributes": {
+    "5173": {
+      "label": "webapp (Vite Dev Server)",
+      "onAutoForward": "notify"
+    }
+  },
 
   "postCreateCommand": "pnpm install"
 }
