@@ -1,23 +1,48 @@
 {
   "name": "Dev Container",
-  "image": "mcr.microsoft.com/devcontainers/base:bookworm", // Uses the latest Debian Bookworm image
-
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
   "features": {
     "ghcr.io/devcontainers/features/node:1": {} // Installs Node.js, npm, and other tools
   },
-
   "customizations": {
     "vscode": {
       "extensions": [
         "editorconfig.editorconfig",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode"
-      ]
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "icon": "terminal-bash"
+          },
+          "zsh": {
+            "path": "zsh"
+          }
+        }
+      }
     }
   },
-
   "remoteUser": "vscode",
-
+  "mounts": [
+    "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
+    "source=claude-code-config-${devcontainerId},target=/home/vscode/.claude,type=volume"
+  ],
+  "containerEnv": {
+    "NODE_OPTIONS": "--max-old-space-size=4096",
+    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
+    "POWERLEVEL9K_DISABLE_GITSTATUS": "true"
+  },
   "forwardPorts": [
     5173 // Forward the webapp Vite development server port
   ],
@@ -27,6 +52,7 @@
       "onAutoForward": "notify"
     }
   },
-
-  "postCreateCommand": "pnpm install"
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "workspaceFolder": "/workspace",
+  "postCreateCommand": "pnpm store prune && pnpm install"
 }
