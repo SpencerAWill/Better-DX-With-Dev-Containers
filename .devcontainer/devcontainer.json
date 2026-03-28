@@ -1,0 +1,25 @@
+{
+  "name": "Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm", // Uses the latest Debian Bookworm image
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {}, // Installs Node.js, npm, and other tools
+    "ghcr.io/dhoeric/features/hadolint:1": {}, // Installs Hadolint for linting Dockerfiles
+    "ghcr.io/devcontainers-extra/features/shellcheck:1": {}, // Installs ShellCheck for linting shell scripts
+    "ghcr.io/devcontainers-extra/features/markdownlint-cli2:1": {} // Installs markdownlint-cli2 for linting Markdown files
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "editorconfig.editorconfig",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+
+  "remoteUser": "vscode",
+
+  "postCreateCommand": "pnpm install"
+}
