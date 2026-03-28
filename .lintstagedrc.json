@@ -1,11 +1,5 @@
 {
   "*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
-  "*.{json,jsonc}": ["prettier --write"],
-  "*.{yml,yaml}": ["prettier --write"],
-  "Dockerfile": ["hadolint"],
-  "docker-compose.yml": ["prettier --write"],
-  "*.{css,scss,less}": ["prettier --write"],
-  "*.{md,mdx}": ["markdownlint --fix", "prettier --write"],
-  "*.sh": ["shellcheck"],
+  "*.{json,jsonc,yml,yaml,css,scss,less,md,mdx,sh}": ["prettier --write"],
   "*": ["prettier --write --ignore-unknown"]
 }
