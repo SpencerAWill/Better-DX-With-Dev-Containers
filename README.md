@@ -5,7 +5,7 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 ## What This Demonstrates
 
 - **Dev container configuration** with Docker Compose for multi-service orchestration
-- **Sidecar containers** (PostgreSQL) running alongside the development environment
+- **Sidecar containers** (PostgreSQL, Azure Service Bus emulator) running alongside the development environment
 - **Multi-language support** (TypeScript + C#) within a single dev container
 - **Nx-style monorepo layout** with `apps/` and `libs/` for clear separation of concerns
 - **Production-like dependency isolation** without polluting the host machine
@@ -19,6 +19,10 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 │   ├── Dockerfile                 # Custom dev environment image
 │   └── docker-compose.yml         # Service orchestration (app + sidecars)
 ├── apps/
+│   ├── functions/                 # Azure Functions (C# / .NET 10 isolated worker)
+│   │   ├── HealthCheck.cs         # HTTP-triggered health check function
+│   │   ├── Program.cs             # Functions host entry point
+│   │   └── Project.Functions.csproj
 │   ├── webapi/                    # ASP.NET Core API (C# / .NET 10)
 │   │   ├── Endpoints/             # Checkout & Stripe webhook endpoints
 │   │   ├── Program.cs             # Application entry point
@@ -45,7 +49,9 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 | ------------------- | ----------------------------------------------------------- |
 | **Frontend**        | React 19, TanStack Router & Query, Vite, Tailwind CSS 4     |
 | **Backend**         | ASP.NET Core (.NET 10), Stripe SDK                          |
+| **Functions**       | Azure Functions v4 (.NET 10 isolated worker)                |
 | **Database**        | PostgreSQL 17 (sidecar container), Entity Framework Core 10 |
+| **Messaging**       | Azure Service Bus (emulated via sidecar container)          |
 | **Dev Environment** | Dev Containers, Docker Compose, PNPM workspaces             |
 | **Code Quality**    | ESLint, Prettier, `dotnet format`, Husky, Commitlint        |
 
@@ -84,6 +90,14 @@ dotnet run
 # → https://localhost:7130 (HTTPS)
 ```
 
+**Azure Functions:**
+
+```bash
+cd apps/functions
+func start
+# → http://localhost:7071
+```
+
 **Database migrations:**
 
 Use the preconfigured VS Code tasks (`Terminal → Run Task`):
@@ -99,6 +113,7 @@ Use the preconfigured VS Code tasks (`Terminal → Run Task`):
 | 5173 | Vite dev server (webapp)    |
 | 5258 | ASP.NET Core HTTP (webapi)  |
 | 7130 | ASP.NET Core HTTPS (webapi) |
+| 7071 | Azure Functions (functions) |
 | 5432 | PostgreSQL                  |
 
 ## Dev Container Architecture
@@ -109,23 +124,25 @@ The dev container setup uses Docker Compose to orchestrate multiple services:
 ┌─────────────────────────────────────────────────┐
 │  Docker Compose                                 │
 │                                                 │
-│  ┌───────────────────────────────────────────┐  │
-│  │  devcontainer (primary)                   │  │
-│  │  ┌─────────────┐  ┌────────────────────┐  │  │
-│  │  │  Node.js    │  │  .NET SDK          │  │  │
-│  │  │  (webapp)   │  │  (webapi + libs)   │  │  │
-│  │  └─────────────┘  └────────────────────┘  │  │
-│  └───────────────────────────────────────────┘  │
-│                       │                         │
-│                       ▼                         │
-│  ┌───────────────────────────────────────────┐  │
-│  │  postgres (sidecar)                       │  │
-│  │  PostgreSQL 17 — persistent volume        │  │
-│  └───────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────┘
+│  ┌─────────────────────────────────────────────────┐  │
+│  │  devcontainer (primary)                         │  │
+│  │  ┌──────────┐ ┌──────────────┐ ┌─────────────┐  │  │
+│  │  │ Node.js  │ │  .NET SDK    │ │ Azure Func  │  │  │
+│  │  │ (webapp) │ │ (webapi+libs)│ │ (functions) │  │  │
+│  │  └──────────┘ └──────────────┘ └─────────────┘  │  │
+│  └─────────────────────────────────────────────────┘  │
+│                       │                               │
+│              ┌────────┴────────┐                      │
+│              ▼                 ▼                      │
+│  ┌───────────────────┐ ┌─────────────────────────┐   │
+│  │  postgres          │ │  servicebus-emulator    │   │
+│  │  PostgreSQL 17     │ │  Azure Service Bus      │   │
+│  │  persistent volume │ │  (backed by MSSQL)      │   │
+│  └───────────────────┘ └─────────────────────────┘   │
+└───────────────────────────────────────────────────────┘
 ```
 
-The **sidecar pattern** means the PostgreSQL instance runs as a separate container managed by Docker Compose, connected over an internal network. This mirrors a production topology where the database is a separate service, while keeping everything local and disposable.
+The **sidecar pattern** means dependencies like PostgreSQL and the Azure Service Bus emulator run as separate containers managed by Docker Compose, connected over an internal network. This mirrors a production topology where databases and message brokers are separate services, while keeping everything local and disposable.
 
 ## Monorepo Conventions
 

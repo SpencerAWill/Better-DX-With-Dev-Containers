@@ -8,9 +8,10 @@ Polyglot monorepo demonstrating dev containers for an online ordering platform. 
 
 - `apps/webapp/` — React 19 frontend (TanStack Router/Query, Vite, Tailwind CSS 4)
 - `apps/webapi/` — ASP.NET Core API (.NET 10, Stripe integration)
+- `apps/functions/` — Azure Functions (.NET 10, isolated worker) for background/event-driven processing
 - `libs/data-models/` — Shared EF Core DbContext and entity definitions
 - `libs/data-migrations/` — EF Core migration assemblies
-- `.devcontainer/` — Dev container config (Dockerfile + Docker Compose with PostgreSQL sidecar)
+- `.devcontainer/` — Dev container config (Dockerfile + Docker Compose with PostgreSQL & Service Bus emulator sidecars)
 
 ## Build & Run
 
@@ -21,6 +22,9 @@ cd apps/webapp && pnpm build        # Production build
 
 # Backend
 cd apps/webapi && dotnet run        # HTTP :5258, HTTPS :7130
+
+# Azure Functions
+cd apps/functions && func start     # Azure Functions local host on :7071
 
 # EF Core migrations (from repo root)
 dotnet ef migrations add <Name> --project libs/data-migrations --startup-project apps/webapi
@@ -74,7 +78,9 @@ dotnet format                       # Formats all .cs files in solution
 
 - **Frontend:** React 19, TanStack (Router, Query, Form), Radix UI, Zod 4, Vite 7
 - **Backend:** ASP.NET Core 10, Stripe.net, EF Core 10, Npgsql
+- **Functions:** Azure Functions v4 (.NET isolated worker), Application Insights
 - **Database:** PostgreSQL 17 (sidecar container)
+- **Messaging:** Azure Service Bus (emulated via sidecar container)
 - **Package manager:** PNPM (workspaces) for JS, .NET CLI / `.slnx` solution for C#
 
 ## Dev Container
@@ -83,4 +89,18 @@ The dev container uses Docker Compose with:
 
 - Primary container: Debian Bookworm base with Node.js + .NET SDK
 - Sidecar: PostgreSQL 17 (`Host=postgres;Port=5432;Database=app;Username=postgres;Password=postgres`)
-- Ports: 5173 (Vite), 5258 (HTTP API), 7130 (HTTPS API), 5432 (PostgreSQL)
+- Sidecar: Azure Service Bus emulator (backed by MSSQL) (`Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;`)
+- Ports: 5173 (Vite), 5258 (HTTP API), 7130 (HTTPS API), 7071 (Azure Functions), 5432 (PostgreSQL)
+
+## Documentation Maintenance
+
+When making changes that affect the project structure, dependencies, build/run commands, dev container configuration, or any other information documented in this file or `/workspace/README.md`, **you must update both files** as part of the same change. Specifically:
+
+- **Adding/removing/renaming an app or lib** — update Repository Layout here, Repository Structure in README, and the Tech Stack table
+- **Adding/removing a sidecar container** — update Dev Container sections in both files and the architecture diagram in README
+- **Changing ports, connection strings, or environment variables** — update the Ports table and Dev Container sections
+- **Adding/changing build, run, test, or lint commands** — update Build & Run and Test & Lint sections
+- **Adding/removing key dependencies or tooling** — update Key Dependencies here and Tech Stack in README
+- **Changing code style rules, git conventions, or dev workflow** — update the relevant sections in both files
+
+Keep the same voice and format already established in each file. CLAUDE.md is terse and reference-oriented; README.md is explanatory and onboarding-oriented.
