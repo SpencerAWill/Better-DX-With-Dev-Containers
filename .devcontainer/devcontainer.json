@@ -35,11 +35,21 @@
   },
   "remoteUser": "vscode",
   "forwardPorts": [
-    5173 // Forward the webapp Vite development server port
+    5173, // Forward the webapp Vite development server port
+    5258, // Forward the webapi HTTP port
+    7130 // Forward the webapi HTTPS port
   ],
   "portsAttributes": {
     "5173": {
       "label": "webapp (Vite Dev Server)",
+      "onAutoForward": "notify"
+    },
+    "5258": {
+      "label": "webapi (HTTP)",
+      "onAutoForward": "notify"
+    },
+    "7130": {
+      "label": "webapi (HTTPS)",
       "onAutoForward": "notify"
     }
   },
