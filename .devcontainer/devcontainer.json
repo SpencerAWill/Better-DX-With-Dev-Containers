@@ -1,9 +1,7 @@
 {
   "name": "Dev Container",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": ".."
-  },
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
   "features": {
     "ghcr.io/devcontainers/features/node:1": {}, // Installs Node.js, npm, and other tools
     "ghcr.io/devcontainers/features/dotnet:2": {} // Installs .NET SDK and related tools
@@ -36,15 +34,6 @@
     }
   },
   "remoteUser": "vscode",
-  "mounts": [
-    "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
-    "source=claude-code-config-${devcontainerId},target=/home/vscode/.claude,type=volume"
-  ],
-  "containerEnv": {
-    "NODE_OPTIONS": "--max-old-space-size=4096",
-    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
-    "POWERLEVEL9K_DISABLE_GITSTATUS": "true"
-  },
   "forwardPorts": [
     5173 // Forward the webapp Vite development server port
   ],
@@ -54,7 +43,6 @@
       "onAutoForward": "notify"
     }
   },
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   "workspaceFolder": "/workspace",
   "postCreateCommand": "pnpm store prune && pnpm install"
 }
