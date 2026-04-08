@@ -1,5 +1,8 @@
 <Solution>
   <Folder Name="/apps/" />
+  <Folder Name="/apps/functions/">
+    <Project Path="apps/functions/Project.Functions.csproj" />
+  </Folder>
   <Folder Name="/apps/webapi/">
     <Project Path="apps/webapi/Project.API.csproj" />
   </Folder>

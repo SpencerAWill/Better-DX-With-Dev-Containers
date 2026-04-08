@@ -4,7 +4,8 @@
   "service": "devcontainer",
   "features": {
     "ghcr.io/devcontainers/features/node:1": {}, // Installs Node.js, npm, and other tools
-    "ghcr.io/devcontainers/features/dotnet:2": {} // Installs .NET SDK and related tools
+    "ghcr.io/devcontainers/features/dotnet:2": {}, // Installs .NET SDK and related tools
+    "ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {} // Azure Functions Core Tools for local development
   },
   "customizations": {
     "vscode": {
@@ -12,7 +13,8 @@
         "editorconfig.editorconfig",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "ms-dotnettools.csdevkit" // C# support for .NET development
+        "ms-dotnettools.csdevkit", // C# support for .NET development
+        "ms-azuretools.vscode-azurefunctions" // Azure Functions extension for local debugging
       ],
       "settings": {
         "editor.formatOnSave": true,
@@ -40,7 +42,9 @@
     7130, // Forward the webapi HTTPS port
     5432, // Forward the PostgreSQL port
     5672, // Forward the Azure Service Bus AMQP port
-    5300 // Forward the Azure Service Bus Management port
+    5300, // Forward the Azure Service Bus Management port
+    7071, // Forward the Azure Functions port (func start)
+    7028 // Forward the Azure Functions port (dotnet run)
   ],
   "portsAttributes": {
     "5173": {
@@ -66,6 +70,14 @@
     "5300": {
       "label": "Azure Service Bus (Management)",
       "onAutoForward": "silent"
+    },
+    "7071": {
+      "label": "Azure Functions (func start)",
+      "onAutoForward": "notify"
+    },
+    "7028": {
+      "label": "Azure Functions (dotnet run)",
+      "onAutoForward": "notify"
     }
   },
   "workspaceFolder": "/workspace",
