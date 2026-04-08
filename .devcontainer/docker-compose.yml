@@ -14,12 +14,15 @@ services:
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=app;Username=postgres;Password=postgres"
       ConnectionStrings__ServiceBus: "Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;"
       ConnectionStrings__AzureStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;"
+      ConnectionStrings__CosmosDB: "AccountEndpoint=https://cosmosdb:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QypfDERNfnKC0JV3rGK5rf8T3OZZhL/1YMYVRXQS97vDvKnDRQ==;"
     depends_on:
       postgres:
         condition: service_healthy
       servicebus-emulator:
         condition: service_started
       azurite:
+        condition: service_healthy
+      cosmosdb:
         condition: service_healthy
     command: sleep infinity
 
@@ -89,9 +92,25 @@ services:
       timeout: 5s
       retries: 5
 
+  cosmosdb:
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest
+    restart: unless-stopped
+    volumes:
+      - cosmosdb-data:/tmp/cosmos/appdata
+    environment:
+      AZURE_COSMOS_EMULATOR_PARTITION_COUNT: "3"
+      AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8081/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
 volumes:
   claude-code-bashhistory:
   claude-code-config:
   postgres-data:
   servicebus-mssql-data:
   azurite-data:
+  cosmosdb-data:

@@ -47,7 +47,8 @@
     7028, // Forward the Azure Functions port (dotnet run)
     10000, // Forward the Azurite Blob service port
     10001, // Forward the Azurite Queue service port
-    10002 // Forward the Azurite Table service port
+    10002, // Forward the Azurite Table service port
+    8081 // Forward the Azure Cosmos DB Emulator endpoint port
   ],
   "portsAttributes": {
     "5173": {
@@ -92,6 +93,10 @@
     },
     "10002": {
       "label": "Azurite Table Service",
+      "onAutoForward": "silent"
+    },
+    "8081": {
+      "label": "Azure Cosmos DB Emulator",
       "onAutoForward": "silent"
     }
   },
