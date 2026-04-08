@@ -12,9 +12,12 @@ services:
       CLAUDE_CONFIG_DIR: /home/vscode/.claude
       POWERLEVEL9K_DISABLE_GITSTATUS: "true"
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=app;Username=postgres;Password=postgres"
+      ConnectionStrings__ServiceBus: "Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;"
     depends_on:
       postgres:
         condition: service_healthy
+      servicebus-emulator:
+        condition: service_started
     command: sleep infinity
 
   postgres:
@@ -32,7 +35,48 @@ services:
       timeout: 5s
       retries: 5
 
+  servicebus-mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    volumes:
+      - servicebus-mssql-data:/var/lib/mssql/data
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "ServiceBus0!"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/opt/mssql-tools18/bin/sqlcmd",
+          "-S",
+          "localhost",
+          "-U",
+          "sa",
+          "-P",
+          "ServiceBus0!",
+          "-C",
+          "-Q",
+          "SELECT 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  servicebus-emulator:
+    image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
+    restart: unless-stopped
+    volumes:
+      - ./servicebus-config.json:/ServiceBus_Emulator/ConfigFiles/Config.json
+    environment:
+      ACCEPT_EULA: "Y"
+      SQL_SERVER: servicebus-mssql
+      MSSQL_SA_PASSWORD: "ServiceBus0!"
+    depends_on:
+      servicebus-mssql:
+        condition: service_healthy
+
 volumes:
   claude-code-bashhistory:
   claude-code-config:
   postgres-data:
+  servicebus-mssql-data:

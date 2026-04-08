@@ -38,7 +38,9 @@
     5173, // Forward the webapp Vite development server port
     5258, // Forward the webapi HTTP port
     7130, // Forward the webapi HTTPS port
-    5432 // Forward the PostgreSQL port
+    5432, // Forward the PostgreSQL port
+    5672, // Forward the Azure Service Bus AMQP port
+    5300 // Forward the Azure Service Bus Management port
   ],
   "portsAttributes": {
     "5173": {
@@ -55,6 +57,14 @@
     },
     "5432": {
       "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "5672": {
+      "label": "Azure Service Bus (AMQP)",
+      "onAutoForward": "silent"
+    },
+    "5300": {
+      "label": "Azure Service Bus (Management)",
       "onAutoForward": "silent"
     }
   },

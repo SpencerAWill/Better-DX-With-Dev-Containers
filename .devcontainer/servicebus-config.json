@@ -1,0 +1,19 @@
+{
+  "UserConfig": {
+    "Namespaces": [
+      {
+        "Name": "sbemulator",
+        "Queues": [
+          {
+            "Name": "orders-paid",
+            "Properties": {}
+          }
+        ],
+        "Topics": []
+      }
+    ],
+    "Logging": {
+      "Type": "File"
+    }
+  }
+}
