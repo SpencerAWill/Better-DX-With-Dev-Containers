@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/apps/" />
+  <Folder Name="/apps/webapi/">
+    <Project Path="apps/webapi/Project.API.csproj" />
+  </Folder>
+</Solution>

@@ -5,14 +5,16 @@
     "context": ".."
   },
   "features": {
-    "ghcr.io/devcontainers/features/node:1": {} // Installs Node.js, npm, and other tools
+    "ghcr.io/devcontainers/features/node:1": {}, // Installs Node.js, npm, and other tools
+    "ghcr.io/devcontainers/features/dotnet:2": {} // Installs .NET SDK and related tools
   },
   "customizations": {
     "vscode": {
       "extensions": [
         "editorconfig.editorconfig",
         "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "ms-dotnettools.csdevkit" // C# support for .NET development
       ],
       "settings": {
         "editor.formatOnSave": true,
