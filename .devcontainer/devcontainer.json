@@ -49,7 +49,8 @@
     10001, // Forward the Azurite Queue service port
     10002, // Forward the Azurite Table service port
     8081, // Forward the Azure Cosmos DB Emulator endpoint port
-    9092 // Forward the Azure Event Hubs Emulator Kafka port
+    9092, // Forward the Azure Event Hubs Emulator Kafka port
+    8080 // Forward the Azure App Configuration Emulator port
   ],
   "portsAttributes": {
     "5173": {
@@ -102,6 +103,10 @@
     },
     "9092": {
       "label": "Azure Event Hubs Emulator (Kafka)",
+      "onAutoForward": "silent"
+    },
+    "8080": {
+      "label": "Azure App Configuration Emulator",
       "onAutoForward": "silent"
     }
   },
