@@ -13,11 +13,14 @@ services:
       POWERLEVEL9K_DISABLE_GITSTATUS: "true"
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=app;Username=postgres;Password=postgres"
       ConnectionStrings__ServiceBus: "Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;"
+      ConnectionStrings__AzureStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;"
     depends_on:
       postgres:
         condition: service_healthy
       servicebus-emulator:
         condition: service_started
+      azurite:
+        condition: service_healthy
     command: sleep infinity
 
   postgres:
@@ -75,8 +78,20 @@ services:
       servicebus-mssql:
         condition: service_healthy
 
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    restart: unless-stopped
+    volumes:
+      - azurite-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 10000"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   claude-code-bashhistory:
   claude-code-config:
   postgres-data:
   servicebus-mssql-data:
+  azurite-data:

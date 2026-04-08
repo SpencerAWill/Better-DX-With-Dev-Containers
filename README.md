@@ -5,7 +5,7 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 ## What This Demonstrates
 
 - **Dev container configuration** with Docker Compose for multi-service orchestration
-- **Sidecar containers** (PostgreSQL, Azure Service Bus emulator) running alongside the development environment
+- **Sidecar containers** (PostgreSQL, Azure Service Bus emulator, Azurite) running alongside the development environment
 - **Multi-language support** (TypeScript + C#) within a single dev container
 - **Nx-style monorepo layout** with `apps/` and `libs/` for clear separation of concerns
 - **Production-like dependency isolation** without polluting the host machine
@@ -52,6 +52,7 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 | **Functions**       | Azure Functions v4 (.NET 10 isolated worker)                |
 | **Database**        | PostgreSQL 17 (sidecar container), Entity Framework Core 10 |
 | **Messaging**       | Azure Service Bus (emulated via sidecar container)          |
+| **Storage**         | Azure Storage (emulated via Azurite sidecar container)      |
 | **Dev Environment** | Dev Containers, Docker Compose, PNPM workspaces             |
 | **Code Quality**    | ESLint, Prettier, `dotnet format`, Husky, Commitlint        |
 
@@ -67,7 +68,7 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 1. Clone the repository
 2. Open the folder in VS Code
 3. When prompted, click **"Reopen in Container"** (or run the command `Dev Containers: Reopen in Container`)
-4. The container builds with all dependencies — Node.js, .NET SDK, PostgreSQL sidecar, and CLI tools — ready to go
+4. The container builds with all dependencies — Node.js, .NET SDK, PostgreSQL sidecar, Service Bus emulator, Azurite (Azure Storage emulator), and CLI tools — ready to go
 
 Everything is configured automatically. No local SDK installs required.
 
@@ -108,41 +109,46 @@ Use the preconfigured VS Code tasks (`Terminal → Run Task`):
 
 ### Ports
 
-| Port | Service                     |
-| ---- | --------------------------- |
-| 5173 | Vite dev server (webapp)    |
-| 5258 | ASP.NET Core HTTP (webapi)  |
-| 7130 | ASP.NET Core HTTPS (webapi) |
-| 7071 | Azure Functions (functions) |
-| 5432 | PostgreSQL                  |
+| Port  | Service                     |
+| ----- | --------------------------- |
+| 5173  | Vite dev server (webapp)    |
+| 5258  | ASP.NET Core HTTP (webapi)  |
+| 7130  | ASP.NET Core HTTPS (webapi) |
+| 7071  | Azure Functions (functions) |
+| 5432  | PostgreSQL                  |
+| 10000 | Azurite Blob service        |
+| 10001 | Azurite Queue service       |
+| 10002 | Azurite Table service       |
 
 ## Dev Container Architecture
 
 The dev container setup uses Docker Compose to orchestrate multiple services:
 
 ```
-┌─────────────────────────────────────────────────┐
-│  Docker Compose                                 │
-│                                                 │
-│  ┌─────────────────────────────────────────────────┐  │
-│  │  devcontainer (primary)                         │  │
-│  │  ┌──────────┐ ┌──────────────┐ ┌─────────────┐  │  │
-│  │  │ Node.js  │ │  .NET SDK    │ │ Azure Func  │  │  │
-│  │  │ (webapp) │ │ (webapi+libs)│ │ (functions) │  │  │
-│  │  └──────────┘ └──────────────┘ └─────────────┘  │  │
-│  └─────────────────────────────────────────────────┘  │
-│                       │                               │
-│              ┌────────┴────────┐                      │
-│              ▼                 ▼                      │
-│  ┌───────────────────┐ ┌─────────────────────────┐   │
-│  │  postgres          │ │  servicebus-emulator    │   │
-│  │  PostgreSQL 17     │ │  Azure Service Bus      │   │
-│  │  persistent volume │ │  (backed by MSSQL)      │   │
-│  └───────────────────┘ └─────────────────────────┘   │
-└───────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│  Docker Compose                                                  │
+│                                                                  │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │  devcontainer (primary)                                    │  │
+│  │  ┌──────────┐ ┌──────────────┐ ┌─────────────┐            │  │
+│  │  │ Node.js  │ │  .NET SDK    │ │ Azure Func  │            │  │
+│  │  │ (webapp) │ │ (webapi+libs)│ │ (functions) │            │  │
+│  │  └──────────┘ └──────────────┘ └─────────────┘            │  │
+│  └────────────────────────────────────────────────────────────┘  │
+│                           │                                      │
+│              ┌────────────┼────────────┐                         │
+│              ▼            ▼            ▼                          │
+│  ┌─────────────────┐ ┌──────────────────┐ ┌──────────────────┐  │
+│  │  postgres        │ │  servicebus-     │ │  azurite         │  │
+│  │  PostgreSQL 17   │ │  emulator        │ │  Azure Storage   │  │
+│  │  persistent vol  │ │  Azure Svc Bus   │ │  emulator        │  │
+│  │                  │ │  (backed by      │ │  persistent vol  │  │
+│  │                  │ │   MSSQL)         │ │                  │  │
+│  └─────────────────┘ └──────────────────┘ └──────────────────┘  │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
-The **sidecar pattern** means dependencies like PostgreSQL and the Azure Service Bus emulator run as separate containers managed by Docker Compose, connected over an internal network. This mirrors a production topology where databases and message brokers are separate services, while keeping everything local and disposable.
+The **sidecar pattern** means dependencies like PostgreSQL, the Azure Service Bus emulator, and Azurite (Azure Storage emulator) run as separate containers managed by Docker Compose, connected over an internal network. This mirrors a production topology where databases and message brokers are separate services, while keeping everything local and disposable.
 
 ## Monorepo Conventions
 

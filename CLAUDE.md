@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Polyglot monorepo demonstrating dev containers for an online ordering platform. Multi-language (TypeScript + C#) with sidecar containers (PostgreSQL) emulating production dependencies.
+Polyglot monorepo demonstrating dev containers for an online ordering platform. Multi-language (TypeScript + C#) with sidecar containers (PostgreSQL, Azure Service Bus emulator, Azurite) emulating production dependencies.
 
 ## Repository Layout
 
@@ -11,7 +11,7 @@ Polyglot monorepo demonstrating dev containers for an online ordering platform. 
 - `apps/functions/` — Azure Functions (.NET 10, isolated worker) for background/event-driven processing
 - `libs/data-models/` — Shared EF Core DbContext and entity definitions
 - `libs/data-migrations/` — EF Core migration assemblies
-- `.devcontainer/` — Dev container config (Dockerfile + Docker Compose with PostgreSQL & Service Bus emulator sidecars)
+- `.devcontainer/` — Dev container config (Dockerfile + Docker Compose with PostgreSQL, Service Bus emulator & Azurite sidecars)
 
 ## Build & Run
 
@@ -81,6 +81,7 @@ dotnet format                       # Formats all .cs files in solution
 - **Functions:** Azure Functions v4 (.NET isolated worker), Application Insights
 - **Database:** PostgreSQL 17 (sidecar container)
 - **Messaging:** Azure Service Bus (emulated via sidecar container)
+- **Storage:** Azure Storage (emulated via Azurite sidecar container)
 - **Package manager:** PNPM (workspaces) for JS, .NET CLI / `.slnx` solution for C#
 
 ## Dev Container
@@ -90,7 +91,8 @@ The dev container uses Docker Compose with:
 - Primary container: Debian Bookworm base with Node.js + .NET SDK
 - Sidecar: PostgreSQL 17 (`Host=postgres;Port=5432;Database=app;Username=postgres;Password=postgres`)
 - Sidecar: Azure Service Bus emulator (backed by MSSQL) (`Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;`)
-- Ports: 5173 (Vite), 5258 (HTTP API), 7130 (HTTPS API), 7071 (Azure Functions), 5432 (PostgreSQL)
+- Sidecar: Azurite — Azure Storage emulator for Blob, Queue, and Table services (`DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;...;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;`)
+- Ports: 5173 (Vite), 5258 (HTTP API), 7130 (HTTPS API), 7071 (Azure Functions), 5432 (PostgreSQL), 10000-10002 (Azurite)
 
 ## Documentation Maintenance
 

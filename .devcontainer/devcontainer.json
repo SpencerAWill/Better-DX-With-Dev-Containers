@@ -44,7 +44,10 @@
     5672, // Forward the Azure Service Bus AMQP port
     5300, // Forward the Azure Service Bus Management port
     7071, // Forward the Azure Functions port (func start)
-    7028 // Forward the Azure Functions port (dotnet run)
+    7028, // Forward the Azure Functions port (dotnet run)
+    10000, // Forward the Azurite Blob service port
+    10001, // Forward the Azurite Queue service port
+    10002 // Forward the Azurite Table service port
   ],
   "portsAttributes": {
     "5173": {
@@ -78,6 +81,18 @@
     "7028": {
       "label": "Azure Functions (dotnet run)",
       "onAutoForward": "notify"
+    },
+    "10000": {
+      "label": "Azurite Blob Service",
+      "onAutoForward": "silent"
+    },
+    "10001": {
+      "label": "Azurite Queue Service",
+      "onAutoForward": "silent"
+    },
+    "10002": {
+      "label": "Azurite Table Service",
+      "onAutoForward": "silent"
     }
   },
   "workspaceFolder": "/workspace",
