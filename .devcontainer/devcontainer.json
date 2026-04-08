@@ -50,7 +50,10 @@
     10002, // Forward the Azurite Table service port
     8081, // Forward the Azure Cosmos DB Emulator endpoint port
     9092, // Forward the Azure Event Hubs Emulator Kafka port
-    8080 // Forward the Azure App Configuration Emulator port
+    8080, // Forward the Azure App Configuration Emulator port
+    6379, // Forward the Redis port
+    1025, // Forward the Mailpit SMTP port
+    8025 // Forward the Mailpit web UI port
   ],
   "portsAttributes": {
     "5173": {
@@ -108,6 +111,18 @@
     "8080": {
       "label": "Azure App Configuration Emulator",
       "onAutoForward": "silent"
+    },
+    "6379": {
+      "label": "Redis",
+      "onAutoForward": "silent"
+    },
+    "1025": {
+      "label": "Mailpit (SMTP)",
+      "onAutoForward": "silent"
+    },
+    "8025": {
+      "label": "Mailpit (Web UI)",
+      "onAutoForward": "notify"
     }
   },
   "workspaceFolder": "/workspace",

@@ -17,6 +17,9 @@ services:
       ConnectionStrings__CosmosDB: "AccountEndpoint=https://cosmosdb:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QypfDERNfnKC0JV3rGK5rf8T3OZZhL/1YMYVRXQS97vDvKnDRQ==;"
       ConnectionStrings__EventHubs: "Endpoint=sb://eventhubs-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;"
       ConnectionStrings__AppConfiguration: "Endpoint=http://app-configuration:8080;Id=abcd;Secret=c2VjcmV0;"
+      ConnectionStrings__Redis: "redis:6379"
+      SmtpSettings__Host: mailpit
+      SmtpSettings__Port: "1025"
     depends_on:
       postgres:
         condition: service_healthy
@@ -30,6 +33,10 @@ services:
         condition: service_started
       app-configuration:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
     command: sleep infinity
 
   postgres:
@@ -151,6 +158,21 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+
 volumes:
   claude-code-bashhistory:
   claude-code-config:
@@ -160,3 +182,4 @@ volumes:
   eventhubs-azurite-data:
   cosmosdb-data:
   app-configuration-data:
+  redis-data:
