@@ -5,7 +5,7 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 ## What This Demonstrates
 
 - **Dev container configuration** with Docker Compose for multi-service orchestration
-- **Sidecar containers** (PostgreSQL, Azure Service Bus emulator, Azurite, Azure Cosmos DB emulator) running alongside the development environment
+- **Sidecar containers** (PostgreSQL, Azure Service Bus emulator, Azurite, Azure Cosmos DB emulator, Azure Event Hubs emulator) running alongside the development environment
 - **Multi-language support** (TypeScript + C#) within a single dev container
 - **Nx-style monorepo layout** with `apps/` and `libs/` for clear separation of concerns
 - **Production-like dependency isolation** without polluting the host machine
@@ -54,6 +54,7 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 | **Messaging**       | Azure Service Bus (emulated via sidecar container)          |
 | **Storage**         | Azure Storage (emulated via Azurite sidecar container)      |
 | **NoSQL Database**  | Azure Cosmos DB (emulated via sidecar container)            |
+| **Event Streaming** | Azure Event Hubs (emulated via sidecar container)           |
 | **Dev Environment** | Dev Containers, Docker Compose, PNPM workspaces             |
 | **Code Quality**    | ESLint, Prettier, `dotnet format`, Husky, Commitlint        |
 
@@ -69,7 +70,7 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 1. Clone the repository
 2. Open the folder in VS Code
 3. When prompted, click **"Reopen in Container"** (or run the command `Dev Containers: Reopen in Container`)
-4. The container builds with all dependencies — Node.js, .NET SDK, PostgreSQL sidecar, Service Bus emulator, Azurite (Azure Storage emulator), Cosmos DB emulator, and CLI tools — ready to go
+4. The container builds with all dependencies — Node.js, .NET SDK, PostgreSQL sidecar, Service Bus emulator, Azurite (Azure Storage emulator), Cosmos DB emulator, Event Hubs emulator, and CLI tools — ready to go
 
 Everything is configured automatically. No local SDK installs required.
 
@@ -121,6 +122,7 @@ Use the preconfigured VS Code tasks (`Terminal → Run Task`):
 | 10001 | Azurite Queue service       |
 | 10002 | Azurite Table service       |
 | 8081  | Azure Cosmos DB Emulator    |
+| 9092  | Azure Event Hubs (Kafka)    |
 
 ## Dev Container Architecture
 
@@ -147,16 +149,17 @@ The dev container setup uses Docker Compose to orchestrate multiple services:
 │  │                  │ │  (backed by      │ │  persistent vol  │  │
 │  │                  │ │   MSSQL)         │ │                  │  │
 │  └─────────────────┘ └──────────────────┘ └──────────────────┘  │
-│  ┌─────────────────┐                                             │
-│  │  cosmosdb        │                                             │
-│  │  Azure Cosmos DB │                                             │
-│  │  emulator        │                                             │
-│  │  persistent vol  │                                             │
-│  └─────────────────┘                                             │
+│  ┌─────────────────┐ ┌──────────────────┐                        │
+│  │  cosmosdb        │ │  eventhubs-      │                        │
+│  │  Azure Cosmos DB │ │  emulator        │                        │
+│  │  emulator        │ │  Azure Event     │                        │
+│  │  persistent vol  │ │  Hubs (backed    │                        │
+│  │                  │ │  by Azurite)     │                        │
+│  └─────────────────┘ └──────────────────┘                        │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-The **sidecar pattern** means dependencies like PostgreSQL, the Azure Service Bus emulator, Azurite (Azure Storage emulator), and the Azure Cosmos DB emulator run as separate containers managed by Docker Compose, connected over an internal network. This mirrors a production topology where databases and message brokers are separate services, while keeping everything local and disposable.
+The **sidecar pattern** means dependencies like PostgreSQL, the Azure Service Bus emulator, Azurite (Azure Storage emulator), the Azure Cosmos DB emulator, and the Azure Event Hubs emulator run as separate containers managed by Docker Compose, connected over an internal network. This mirrors a production topology where databases and message brokers are separate services, while keeping everything local and disposable.
 
 ## Monorepo Conventions
 

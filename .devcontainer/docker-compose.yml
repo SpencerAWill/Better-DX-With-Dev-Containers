@@ -15,6 +15,7 @@ services:
       ConnectionStrings__ServiceBus: "Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;"
       ConnectionStrings__AzureStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;"
       ConnectionStrings__CosmosDB: "AccountEndpoint=https://cosmosdb:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QypfDERNfnKC0JV3rGK5rf8T3OZZhL/1YMYVRXQS97vDvKnDRQ==;"
+      ConnectionStrings__EventHubs: "Endpoint=sb://eventhubs-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;"
     depends_on:
       postgres:
         condition: service_healthy
@@ -24,6 +25,8 @@ services:
         condition: service_healthy
       cosmosdb:
         condition: service_healthy
+      eventhubs-emulator:
+        condition: service_started
     command: sleep infinity
 
   postgres:
@@ -91,6 +94,19 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  eventhubs-emulator:
+    image: mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest
+    restart: unless-stopped
+    volumes:
+      - ./eventhubs-config.json:/Eventhubs_Emulator/ConfigFiles/Config.json
+    environment:
+      BLOB_SERVER: azurite
+      METADATA_SERVER: azurite
+      ACCEPT_EULA: "Y"
+    depends_on:
+      azurite:
+        condition: service_healthy
 
   cosmosdb:
     image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest
