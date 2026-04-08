@@ -13,6 +13,15 @@
                 "Name": "$Default"
               }
             ]
+          },
+          {
+            "Name": "orders-deadletter",
+            "PartitionCount": "1",
+            "ConsumerGroups": [
+              {
+                "Name": "$Default"
+              }
+            ]
           }
         ]
       }

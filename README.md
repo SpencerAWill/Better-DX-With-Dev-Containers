@@ -152,16 +152,23 @@ The dev container setup uses Docker Compose to orchestrate multiple services:
 │  │                  │ │   MSSQL)         │ │                  │  │
 │  └─────────────────┘ └──────────────────┘ └──────────────────┘  │
 │  ┌─────────────────┐ ┌──────────────────┐ ┌──────────────────┐  │
+│  ┌─────────────────┐                                             │
+│  │  eventhubs-      │                                             │
+│  │  azurite         │  (dedicated Azurite for Event Hubs)         │
+│  │  persistent vol  │                                             │
+│  └────────┬────────┘                                             │
+│           ▼                                                       │
+│  ┌─────────────────┐ ┌──────────────────┐ ┌──────────────────┐  │
 │  │  cosmosdb        │ │  eventhubs-      │ │  app-            │  │
 │  │  Azure Cosmos DB │ │  emulator        │ │  configuration   │  │
 │  │  emulator        │ │  Azure Event     │ │  Azure App       │  │
-│  │  persistent vol  │ │  Hubs (backed    │ │  Configuration   │  │
-│  │                  │ │  by Azurite)     │ │  persistent vol  │  │
+│  │  persistent vol  │ │  Hubs            │ │  Configuration   │  │
+│  │                  │ │                  │ │  persistent vol  │  │
 │  └─────────────────┘ └──────────────────┘ └──────────────────┘  │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-The **sidecar pattern** means dependencies like PostgreSQL, the Azure Service Bus emulator, Azurite (Azure Storage emulator), the Azure Cosmos DB emulator, the Azure Event Hubs emulator, and the Azure App Configuration emulator run as separate containers managed by Docker Compose, connected over an internal network. This mirrors a production topology where databases and message brokers are separate services, while keeping everything local and disposable.
+The **sidecar pattern** means dependencies like PostgreSQL, the Azure Service Bus emulator, Azurite (Azure Storage emulator), the Azure Cosmos DB emulator, the Azure Event Hubs emulator (with its own dedicated Azurite instance), and the Azure App Configuration emulator run as separate containers managed by Docker Compose, connected over an internal network. The Event Hubs emulator uses a separate Azurite instance (`eventhubs-azurite`) so that its internal checkpoint and metadata storage is isolated from application blob/queue/table data. This mirrors a production topology where databases and message brokers are separate services, while keeping everything local and disposable.
 
 ## Monorepo Conventions
 

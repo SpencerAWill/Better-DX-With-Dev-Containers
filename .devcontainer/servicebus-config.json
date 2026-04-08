@@ -6,7 +6,10 @@
         "Queues": [
           {
             "Name": "orders-paid",
-            "Properties": {}
+            "Properties": {
+              "DeadLetteringOnMessageExpiration": true,
+              "MaxDeliveryCount": 5
+            }
           }
         ],
         "Topics": []

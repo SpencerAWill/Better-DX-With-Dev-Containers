@@ -98,17 +98,28 @@ services:
       timeout: 5s
       retries: 5
 
+  eventhubs-azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    restart: unless-stopped
+    volumes:
+      - eventhubs-azurite-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 10000"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   eventhubs-emulator:
     image: mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest
     restart: unless-stopped
     volumes:
       - ./eventhubs-config.json:/Eventhubs_Emulator/ConfigFiles/Config.json
     environment:
-      BLOB_SERVER: azurite
-      METADATA_SERVER: azurite
+      BLOB_SERVER: eventhubs-azurite
+      METADATA_SERVER: eventhubs-azurite
       ACCEPT_EULA: "Y"
     depends_on:
-      azurite:
+      eventhubs-azurite:
         condition: service_healthy
 
   cosmosdb:
@@ -146,5 +157,6 @@ volumes:
   postgres-data:
   servicebus-mssql-data:
   azurite-data:
+  eventhubs-azurite-data:
   cosmosdb-data:
   app-configuration-data:
