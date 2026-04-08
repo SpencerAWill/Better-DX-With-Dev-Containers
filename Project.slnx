@@ -3,4 +3,11 @@
   <Folder Name="/apps/webapi/">
     <Project Path="apps/webapi/Project.API.csproj" />
   </Folder>
+  <Folder Name="/libs/" />
+  <Folder Name="/libs/data-models/">
+    <Project Path="libs/data-models/Project.Data.Models.csproj" />
+  </Folder>
+  <Folder Name="/libs/data-migrations/">
+    <Project Path="libs/data-migrations/Project.Data.Migrations.csproj" />
+  </Folder>
 </Solution>

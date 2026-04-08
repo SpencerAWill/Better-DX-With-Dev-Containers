@@ -11,8 +11,28 @@ services:
       NODE_OPTIONS: "--max-old-space-size=4096"
       CLAUDE_CONFIG_DIR: /home/vscode/.claude
       POWERLEVEL9K_DISABLE_GITSTATUS: "true"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=app;Username=postgres;Password=postgres"
+    depends_on:
+      postgres:
+        condition: service_healthy
     command: sleep infinity
+
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   claude-code-bashhistory:
   claude-code-config:
+  postgres-data:

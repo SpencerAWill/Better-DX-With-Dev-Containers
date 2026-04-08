@@ -37,7 +37,8 @@
   "forwardPorts": [
     5173, // Forward the webapp Vite development server port
     5258, // Forward the webapi HTTP port
-    7130 // Forward the webapi HTTPS port
+    7130, // Forward the webapi HTTPS port
+    5432 // Forward the PostgreSQL port
   ],
   "portsAttributes": {
     "5173": {
@@ -51,8 +52,12 @@
     "7130": {
       "label": "webapi (HTTPS)",
       "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
     }
   },
   "workspaceFolder": "/workspace",
-  "postCreateCommand": "pnpm store prune && pnpm install"
+  "postCreateCommand": "pnpm store prune && pnpm install && dotnet tool restore"
 }
