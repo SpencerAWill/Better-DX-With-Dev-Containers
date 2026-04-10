@@ -2,16 +2,8 @@
   "UserConfig": {
     "Namespaces": [
       {
-        "Name": "sbemulator",
-        "Queues": [
-          {
-            "Name": "orders-paid",
-            "Properties": {
-              "DeadLetteringOnMessageExpiration": true,
-              "MaxDeliveryCount": 5
-            }
-          }
-        ],
+        "Name": "sbemulatorns",
+        "Queues": [],
         "Topics": []
       }
     ],

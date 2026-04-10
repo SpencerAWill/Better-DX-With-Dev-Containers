@@ -14,7 +14,12 @@
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "ms-dotnettools.csdevkit", // C# support for .NET development
-        "ms-azuretools.vscode-azurefunctions" // Azure Functions extension for local debugging
+        "ms-azuretools.vscode-azurefunctions", // Azure Functions extension for local debugging
+        "ms-azuretools.vscode-cosmosdb", // Azure Databases — Cosmos DB data explorer
+        "ms-azuretools.vscode-azurestorage", // Azure Storage — browse Azurite blobs, queues, tables
+        "ms-ossdata.vscode-postgresql", // PostgreSQL query editor
+        "Redis.redis-for-vscode", // Official Redis GUI
+        "RodrigoPiccelli.servicebus-emulator-explorer" // Service Bus Emulator — browse queues, topics, messages
       ],
       "settings": {
         "editor.formatOnSave": true,
@@ -40,20 +45,8 @@
     5173, // Forward the webapp Vite development server port
     5258, // Forward the webapi HTTP port
     7130, // Forward the webapi HTTPS port
-    5432, // Forward the PostgreSQL port
-    5672, // Forward the Azure Service Bus AMQP port
-    5300, // Forward the Azure Service Bus Management port
     7071, // Forward the Azure Functions port (func start)
-    7028, // Forward the Azure Functions port (dotnet run)
-    10000, // Forward the Azurite Blob service port
-    10001, // Forward the Azurite Queue service port
-    10002, // Forward the Azurite Table service port
-    8081, // Forward the Azure Cosmos DB Emulator endpoint port
-    9092, // Forward the Azure Event Hubs Emulator Kafka port
-    8080, // Forward the Azure App Configuration Emulator port
-    6379, // Forward the Redis port
-    1025, // Forward the Mailpit SMTP port
-    8025 // Forward the Mailpit web UI port
+    7028 // Forward the Azure Functions port (dotnet run)
   ],
   "portsAttributes": {
     "5173": {
@@ -108,7 +101,7 @@
       "label": "Azure Event Hubs Emulator (Kafka)",
       "onAutoForward": "silent"
     },
-    "8080": {
+    "8483": {
       "label": "Azure App Configuration Emulator",
       "onAutoForward": "silent"
     },
@@ -123,8 +116,15 @@
     "8025": {
       "label": "Mailpit (Web UI)",
       "onAutoForward": "notify"
+    },
+    "5235": {
+      "label": "EventHub Explorer",
+      "onAutoForward": "notify"
     }
   },
   "workspaceFolder": "/workspace",
-  "postCreateCommand": "pnpm store prune && pnpm install && dotnet tool restore"
+  "postCreateCommand": {
+    "node": "pnpm install",
+    "dotnet": "dotnet tool restore && dotnet restore"
+  }
 }

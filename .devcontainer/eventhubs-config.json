@@ -3,25 +3,12 @@
     "NamespaceConfig": [
       {
         "Type": "EventHub",
-        "Name": "ehemulator",
+        "Name": "emulatorns1",
         "Entities": [
           {
-            "Name": "orders",
-            "PartitionCount": "2",
-            "ConsumerGroups": [
-              {
-                "Name": "$Default"
-              }
-            ]
-          },
-          {
-            "Name": "orders-deadletter",
+            "Name": "placeholder",
             "PartitionCount": "1",
-            "ConsumerGroups": [
-              {
-                "Name": "$Default"
-              }
-            ]
+            "ConsumerGroups": []
           }
         ]
       }

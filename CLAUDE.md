@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Polyglot monorepo demonstrating dev containers for an online ordering platform. Multi-language (TypeScript + C#) with sidecar containers (PostgreSQL, Redis, Mailpit, Azure Service Bus emulator, Azurite, Azure Cosmos DB emulator, Azure Event Hubs emulator, Azure App Configuration emulator) emulating production dependencies.
+Polyglot monorepo demonstrating dev containers for an online ordering platform. Multi-language (TypeScript + C#) with sidecar containers (PostgreSQL, Redis, Mailpit, Azure Service Bus emulator, Azurite, Azure Cosmos DB emulator, Azure Event Hubs emulator, Azure App Configuration emulator) emulating production dependencies. Includes admin UI sidecar (EventHub Explorer) and VS Code extensions for service introspection.
 
 ## Repository Layout
 
@@ -11,7 +11,7 @@ Polyglot monorepo demonstrating dev containers for an online ordering platform. 
 - `apps/functions/` — Azure Functions (.NET 10, isolated worker) for background/event-driven processing
 - `libs/data-models/` — Shared EF Core DbContext and entity definitions
 - `libs/data-migrations/` — EF Core migration assemblies
-- `.devcontainer/` — Dev container config (Dockerfile + Docker Compose with PostgreSQL, Service Bus emulator, Azurite, Cosmos DB emulator, Event Hubs emulator & App Configuration emulator sidecars)
+- `.devcontainer/` — Dev container config (Dockerfile + Docker Compose with PostgreSQL, Service Bus emulator, Azurite, Cosmos DB emulator, Event Hubs emulator, App Configuration emulator & admin UI sidecars)
 
 ## Build & Run
 
@@ -94,10 +94,11 @@ The dev container uses Docker Compose with:
 - Sidecar: Azurite — Azure Storage emulator for Blob, Queue, and Table services (`DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;...;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;`)
 - Sidecar: Azure Cosmos DB emulator (Linux) (`AccountEndpoint=https://cosmosdb:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QypfDERNfnKC0JV3rGK5rf8T3OZZhL/1YMYVRXQS97vDvKnDRQ==;`)
 - Sidecar: Azure Event Hubs emulator (backed by dedicated Azurite instance `eventhubs-azurite`) (`Endpoint=sb://eventhubs-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;`)
-- Sidecar: Azure App Configuration emulator (`Endpoint=http://app-configuration:8080;Id=abcd;Secret=c2VjcmV0;`)
+- Sidecar: Azure App Configuration emulator (`Endpoint=http://app-configuration:8483;Id=abcd;Secret=c2VjcmV0;`)
 - Sidecar: Redis 7 (`redis:6379`)
 - Sidecar: Mailpit — local SMTP server with web UI (SMTP on `mailpit:1025`, web UI on `mailpit:8025`)
-- Ports: 5173 (Vite), 5258 (HTTP API), 7130 (HTTPS API), 7071 (Azure Functions), 1025 (Mailpit SMTP), 5432 (PostgreSQL), 6379 (Redis), 8025 (Mailpit Web UI), 8080 (App Configuration), 8081 (Cosmos DB), 9092 (Event Hubs Kafka), 10000-10002 (Azurite)
+- Sidecar: EventHub Explorer — web UI for Event Hubs, Service Bus, and Storage Queues (`http://localhost:5235`)
+- Ports: 5173 (Vite), 5258 (HTTP API), 7130 (HTTPS API), 7071 (Azure Functions), 1025 (Mailpit SMTP), 5432 (PostgreSQL), 6379 (Redis), 8025 (Mailpit Web UI), 8483 (App Configuration), 8081 (Cosmos DB), 9092 (Event Hubs Kafka), 10000-10002 (Azurite), 5235 (EventHub Explorer)
 
 ## Documentation Maintenance
 

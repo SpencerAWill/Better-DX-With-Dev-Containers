@@ -16,7 +16,7 @@ services:
       ConnectionStrings__AzureStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;"
       ConnectionStrings__CosmosDB: "AccountEndpoint=https://cosmosdb:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QypfDERNfnKC0JV3rGK5rf8T3OZZhL/1YMYVRXQS97vDvKnDRQ==;"
       ConnectionStrings__EventHubs: "Endpoint=sb://eventhubs-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;"
-      ConnectionStrings__AppConfiguration: "Endpoint=http://app-configuration:8080;Id=abcd;Secret=c2VjcmV0;"
+      ConnectionStrings__AppConfiguration: "Endpoint=http://app-configuration:8483;Id=abcd;Secret=c2VjcmV0;"
       ConnectionStrings__Redis: "redis:6379"
       SmtpSettings__Host: mailpit
       SmtpSettings__Port: "1025"
@@ -28,11 +28,11 @@ services:
       azurite:
         condition: service_healthy
       cosmosdb:
-        condition: service_healthy
+        condition: service_started
       eventhubs-emulator:
         condition: service_started
       app-configuration:
-        condition: service_healthy
+        condition: service_started
       redis:
         condition: service_healthy
       mailpit:
@@ -42,6 +42,8 @@ services:
   postgres:
     image: postgres:17
     restart: unless-stopped
+    ports:
+      - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
@@ -56,6 +58,7 @@ services:
 
   servicebus-mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
     restart: unless-stopped
     volumes:
       - servicebus-mssql-data:/var/lib/mssql/data
@@ -84,6 +87,9 @@ services:
   servicebus-emulator:
     image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
     restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "5300:5300"
     volumes:
       - ./servicebus-config.json:/ServiceBus_Emulator/ConfigFiles/Config.json
     environment:
@@ -97,6 +103,10 @@ services:
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite:latest
     restart: unless-stopped
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
     volumes:
       - azurite-data:/data
     healthcheck:
@@ -119,6 +129,8 @@ services:
   eventhubs-emulator:
     image: mcr.microsoft.com/azure-messaging/eventhubs-emulator:latest
     restart: unless-stopped
+    ports:
+      - "9092:9092"
     volumes:
       - ./eventhubs-config.json:/Eventhubs_Emulator/ConfigFiles/Config.json
     environment:
@@ -131,36 +143,37 @@ services:
 
   cosmosdb:
     image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest
+    platform: linux/amd64
     restart: unless-stopped
+    ports:
+      - "8081:8081"
     volumes:
       - cosmosdb-data:/tmp/cosmos/appdata
     environment:
       AZURE_COSMOS_EMULATOR_PARTITION_COUNT: "3"
       AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE: "true"
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:8081/ || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 60s
+      test: ["NONE"]
 
   app-configuration:
-    image: mcr.microsoft.com/azure-app-configuration/app-configuration-emulator:latest
+    image: mcr.microsoft.com/azure-app-configuration/app-configuration-emulator:1.0.2
+    platform: linux/amd64
     restart: unless-stopped
+    ports:
+      - "8483:8483"
     volumes:
       - app-configuration-data:/app/.aace
     environment:
       Tenant__AnonymousAuthEnabled: "true"
       Authentication__Anonymous__AnonymousUserRole: "Owner"
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health || exit 1"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      test: ["NONE"]
 
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    ports:
+      - "6379:6379"
     volumes:
       - redis-data:/data
     healthcheck:
@@ -172,6 +185,17 @@ services:
   mailpit:
     image: axllent/mailpit:latest
     restart: unless-stopped
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+  eventhub-explorer:
+    image: dvlaskin/eventhubexplorer:latest
+    restart: unless-stopped
+    ports:
+      - "5235:8080"
+    volumes:
+      - eventhub-explorer-data:/app/Data
 
 volumes:
   claude-code-bashhistory:
@@ -183,3 +207,4 @@ volumes:
   cosmosdb-data:
   app-configuration-data:
   redis-data:
+  eventhub-explorer-data:
