@@ -20,22 +20,30 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 │   ├── Dockerfile                 # Custom dev environment image
 │   └── docker-compose.yml         # Service orchestration (app + sidecars)
 ├── apps/
-│   ├── functions/                 # Azure Functions (C# / .NET 10 isolated worker)
-│   │   ├── HealthCheck.cs         # HTTP-triggered health check function
-│   │   ├── Program.cs             # Functions host entry point
-│   │   └── Project.Functions.csproj
-│   ├── webapi/                    # ASP.NET Core API (C# / .NET 10)
+│   ├── ordering-web/              # Customer ordering web app (TypeScript / React / Vite)
+│   │   ├── src/
+│   │   │   ├── components/        # UI components (Radix-based)
+│   │   │   ├── routes/            # File-based routing (TanStack Router)
+│   │   │   ├── hooks/             # Custom React hooks
+│   │   │   └── integrations/      # Third-party integrations
+│   │   ├── package.json
+│   │   └── vite.config.ts
+│   ├── ordering-mobile/           # Customer ordering mobile app
+│   ├── ordering-api/              # Shared API for ordering-web and ordering-mobile (C# / .NET 10)
 │   │   ├── Endpoints/             # Checkout & Stripe webhook endpoints
 │   │   ├── Program.cs             # Application entry point
 │   │   └── Project.API.csproj
-│   └── webapp/                    # React frontend (TypeScript / Vite)
-│       ├── src/
-│       │   ├── components/        # UI components (Radix-based)
-│       │   ├── routes/            # File-based routing (TanStack Router)
-│       │   ├── hooks/             # Custom React hooks
-│       │   └── integrations/      # Third-party integrations
-│       ├── package.json
-│       └── vite.config.ts
+│   ├── admin-web/                 # Administrator back-office management web app
+│   ├── admin-api/                 # API for admin-web (C# / .NET 10)
+│   ├── kds-web/                   # Kitchen Display System web app
+│   ├── kds-api/                   # API for kds-web (C# / .NET 10)
+│   ├── payment-api/               # Payment processing API (C# / .NET 10, Stripe)
+│   ├── menu-api/                  # Menu data REST API with caching (C# / .NET 10)
+│   ├── order-processing-functions/  # Order lifecycle state machine (Azure Functions)
+│   └── notification-functions/    # Event-triggered notifications (Azure Functions)
+│       ├── HealthCheck.cs         # HTTP-triggered health check function
+│       ├── Program.cs             # Functions host entry point
+│       └── Project.Functions.csproj
 ├── libs/
 │   ├── data-models/               # Shared EF Core DbContext & entities
 │   └── data-migrations/           # EF Core database migrations
@@ -46,21 +54,24 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 
 ## Tech Stack
 
-| Layer               | Technology                                                  |
-| ------------------- | ----------------------------------------------------------- |
-| **Frontend**        | React 19, TanStack Router & Query, Vite, Tailwind CSS 4     |
-| **Backend**         | ASP.NET Core (.NET 10), Stripe SDK                          |
-| **Functions**       | Azure Functions v4 (.NET 10 isolated worker)                |
-| **Database**        | PostgreSQL 17 (sidecar container), Entity Framework Core 10 |
-| **Messaging**       | Azure Service Bus (emulated via sidecar container)          |
-| **Storage**         | Azure Storage (emulated via Azurite sidecar container)      |
-| **NoSQL Database**  | Azure Cosmos DB (emulated via sidecar container)            |
-| **Event Streaming** | Azure Event Hubs (emulated via sidecar container)           |
-| **Configuration**   | Azure App Configuration (emulated via sidecar container)    |
-| **Caching**         | Redis 7 (sidecar container)                                 |
-| **Email**           | Mailpit — local SMTP server with web UI (sidecar container) |
-| **Dev Environment** | Dev Containers, Docker Compose, PNPM workspaces             |
-| **Code Quality**    | ESLint, Prettier, `dotnet format`, Husky, Commitlint        |
+| Layer                 | Technology                                                  |
+| --------------------- | ----------------------------------------------------------- |
+| **Frontend (Web)**    | React 19, TanStack Router & Query, Vite, Tailwind CSS 4     |
+| **Frontend (Mobile)** | TBD                                                         |
+| **Backend (APIs)**    | ASP.NET Core (.NET 10), Stripe SDK                          |
+| **Background**        | Azure Functions v4 (.NET 10 isolated worker)                |
+| **Payments**          | Stripe (isolated in payment-api)                            |
+| **Identity**          | Keycloakify / Azure Entra ID (infrastructure)               |
+| **Database**          | PostgreSQL 17 (sidecar container), Entity Framework Core 10 |
+| **Messaging**         | Azure Service Bus (emulated via sidecar container)          |
+| **Storage**           | Azure Storage (emulated via Azurite sidecar container)      |
+| **NoSQL Database**    | Azure Cosmos DB (emulated via sidecar container)            |
+| **Event Streaming**   | Azure Event Hubs (emulated via sidecar container)           |
+| **Configuration**     | Azure App Configuration (emulated via sidecar container)    |
+| **Caching**           | Redis 7 (sidecar container)                                 |
+| **Email**             | Mailpit — local SMTP server with web UI (sidecar container) |
+| **Dev Environment**   | Dev Containers, Docker Compose, PNPM workspaces             |
+| **Code Quality**      | ESLint, Prettier, `dotnet format`, Husky, Commitlint        |
 
 ## Getting Started
 
@@ -80,27 +91,27 @@ Everything is configured automatically. No local SDK installs required.
 
 ### Running the Apps
 
-**Frontend (webapp):**
+**Customer ordering web app (ordering-web):**
 
 ```bash
-cd apps/webapp
+cd apps/ordering-web
 pnpm dev
 # → http://localhost:5173
 ```
 
-**Backend (webapi):**
+**Ordering API (ordering-api) — shared by ordering-web and ordering-mobile:**
 
 ```bash
-cd apps/webapi
+cd apps/ordering-api
 dotnet run
 # → http://localhost:5258 (HTTP)
 # → https://localhost:7130 (HTTPS)
 ```
 
-**Azure Functions:**
+**Notification Functions:**
 
 ```bash
-cd apps/functions
+cd apps/notification-functions
 func start
 # → http://localhost:7071
 ```
@@ -115,23 +126,23 @@ Use the preconfigured VS Code tasks (`Terminal → Run Task`):
 
 ### Ports
 
-| Port  | Service                     |
-| ----- | --------------------------- |
-| 5173  | Vite dev server (webapp)    |
-| 5258  | ASP.NET Core HTTP (webapi)  |
-| 7130  | ASP.NET Core HTTPS (webapi) |
-| 7071  | Azure Functions (functions) |
-| 5432  | PostgreSQL                  |
-| 10000 | Azurite Blob service        |
-| 10001 | Azurite Queue service       |
-| 10002 | Azurite Table service       |
-| 8081  | Azure Cosmos DB Emulator    |
-| 1025  | Mailpit SMTP                |
-| 6379  | Redis                       |
-| 8025  | Mailpit Web UI              |
-| 8483  | Azure App Configuration     |
-| 9092  | Azure Event Hubs (Kafka)    |
-| 5235  | EventHub Explorer           |
+| Port  | Service                                  |
+| ----- | ---------------------------------------- |
+| 5173  | Vite dev server (ordering-web)           |
+| 5258  | ASP.NET Core HTTP (ordering-api)         |
+| 7130  | ASP.NET Core HTTPS (ordering-api)        |
+| 7071  | Azure Functions (notification-functions) |
+| 5432  | PostgreSQL                               |
+| 10000 | Azurite Blob service                     |
+| 10001 | Azurite Queue service                    |
+| 10002 | Azurite Table service                    |
+| 8081  | Azure Cosmos DB Emulator                 |
+| 1025  | Mailpit SMTP                             |
+| 6379  | Redis                                    |
+| 8025  | Mailpit Web UI                           |
+| 8483  | Azure App Configuration                  |
+| 9092  | Azure Event Hubs (Kafka)                 |
+| 5235  | EventHub Explorer                        |
 
 ## Dev Container Architecture
 
@@ -145,7 +156,7 @@ The dev container setup uses Docker Compose to orchestrate multiple services:
 │  │  devcontainer (primary)                                    │  │
 │  │  ┌──────────┐ ┌──────────────┐ ┌─────────────┐            │  │
 │  │  │ Node.js  │ │  .NET SDK    │ │ Azure Func  │            │  │
-│  │  │ (webapp) │ │ (webapi+libs)│ │ (functions) │            │  │
+│  │  │ (web UIs)│ │  (APIs+libs) │ │ (functions) │            │  │
 │  │  └──────────┘ └──────────────┘ └─────────────┘            │  │
 │  └────────────────────────────────────────────────────────────┘  │
 │                           │                                      │

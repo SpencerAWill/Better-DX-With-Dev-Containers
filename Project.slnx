@@ -1,10 +1,10 @@
 <Solution>
   <Folder Name="/apps/" />
-  <Folder Name="/apps/functions/">
-    <Project Path="apps/functions/Project.Functions.csproj" />
+  <Folder Name="/apps/notification-functions/">
+    <Project Path="apps/notification-functions/Project.Functions.csproj" />
   </Folder>
-  <Folder Name="/apps/webapi/">
-    <Project Path="apps/webapi/Project.API.csproj" />
+  <Folder Name="/apps/ordering-api/">
+    <Project Path="apps/ordering-api/Project.API.csproj" />
   </Folder>
   <Folder Name="/libs/" />
   <Folder Name="/libs/data-models/">

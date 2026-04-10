@@ -6,9 +6,17 @@ Polyglot monorepo demonstrating dev containers for an online ordering platform. 
 
 ## Repository Layout
 
-- `apps/webapp/` — React 19 frontend (TanStack Router/Query, Vite, Tailwind CSS 4)
-- `apps/webapi/` — ASP.NET Core API (.NET 10, Stripe integration)
-- `apps/functions/` — Azure Functions (.NET 10, isolated worker) for background/event-driven processing
+- `apps/ordering-web/` — React 19 customer ordering frontend (TanStack Router/Query, Vite, Tailwind CSS 4)
+- `apps/ordering-mobile/` — Customer ordering mobile app
+- `apps/ordering-api/` — ASP.NET Core API (.NET 10) shared by `ordering-web` and `ordering-mobile`
+- `apps/admin-web/` — Administrator back-office management web app
+- `apps/admin-api/` — ASP.NET Core API for `admin-web`
+- `apps/kds-web/` — Kitchen Display System web app for kitchen staff
+- `apps/kds-api/` — ASP.NET Core API for `kds-web`
+- `apps/payment-api/` — ASP.NET Core API for payment processing (Stripe)
+- `apps/menu-api/` — ASP.NET Core REST API for menu data with caching
+- `apps/order-processing-functions/` — Azure Functions (.NET 10, isolated worker) for order lifecycle state machine
+- `apps/notification-functions/` — Azure Functions (.NET 10, isolated worker) for event-triggered notifications
 - `libs/data-models/` — Shared EF Core DbContext and entity definitions
 - `libs/data-migrations/` — EF Core migration assemblies
 - `.devcontainer/` — Dev container config (Dockerfile + Docker Compose with PostgreSQL, Service Bus emulator, Azurite, Cosmos DB emulator, Event Hubs emulator, App Configuration emulator & admin UI sidecars)
@@ -16,31 +24,31 @@ Polyglot monorepo demonstrating dev containers for an online ordering platform. 
 ## Build & Run
 
 ```bash
-# Frontend
-cd apps/webapp && pnpm dev          # Vite dev server on :5173
-cd apps/webapp && pnpm build        # Production build
+# Frontend (ordering)
+cd apps/ordering-web && pnpm dev    # Vite dev server on :5173
+cd apps/ordering-web && pnpm build  # Production build
 
-# Backend
-cd apps/webapi && dotnet run        # HTTP :5258, HTTPS :7130
+# Backend (ordering API — shared by ordering-web and ordering-mobile)
+cd apps/ordering-api && dotnet run  # HTTP :5258, HTTPS :7130
 
-# Azure Functions
-cd apps/functions && func start     # Azure Functions local host on :7071
+# Azure Functions (notification)
+cd apps/notification-functions && func start  # Azure Functions local host on :7071
 
 # EF Core migrations (from repo root)
-dotnet ef migrations add <Name> --project libs/data-migrations --startup-project apps/webapi
-dotnet ef database update --project libs/data-migrations --startup-project apps/webapi
+dotnet ef migrations add <Name> --project libs/data-migrations --startup-project apps/ordering-api
+dotnet ef database update --project libs/data-migrations --startup-project apps/ordering-api
 ```
 
 ## Test & Lint
 
 ```bash
-# Frontend tests
-cd apps/webapp && pnpm test         # Vitest
+# Frontend tests (ordering)
+cd apps/ordering-web && pnpm test   # Vitest
 
-# Linting
-cd apps/webapp && pnpm lint         # ESLint
-cd apps/webapp && pnpm format       # Prettier check
-cd apps/webapp && pnpm check        # Prettier write + ESLint fix
+# Linting (ordering)
+cd apps/ordering-web && pnpm lint   # ESLint
+cd apps/ordering-web && pnpm format # Prettier check
+cd apps/ordering-web && pnpm check  # Prettier write + ESLint fix
 
 # C# formatting
 dotnet format                       # Formats all .cs files in solution
@@ -65,7 +73,7 @@ dotnet format                       # Formats all .cs files in solution
 
 - Strict mode enabled, no unused locals/parameters
 - Path aliases: `#/*` and `@/*` both resolve to `./src/*`
-- File-based routing via TanStack Router (routes in `apps/webapp/src/routes/`)
+- File-based routing via TanStack Router (routes in `apps/ordering-web/src/routes/`)
 - `routeTree.gen.ts` is auto-generated — do not edit manually
 
 ## Git Conventions
