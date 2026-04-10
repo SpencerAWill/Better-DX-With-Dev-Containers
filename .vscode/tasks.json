@@ -11,7 +11,7 @@
         "add",
         "${input:migrationName}",
         "--project",
-        "libs/data-migrations/Project.Data.Migrations.csproj",
+        "libs/ordering-data/Project.Data.Models.csproj",
         "--startup-project",
         "apps/ordering-api/Project.API.csproj"
       ],
@@ -33,7 +33,7 @@
         "database",
         "update",
         "--project",
-        "libs/data-migrations/Project.Data.Migrations.csproj",
+        "libs/ordering-data/Project.Data.Models.csproj",
         "--startup-project",
         "apps/ordering-api/Project.API.csproj"
       ],
@@ -55,7 +55,7 @@
         "migrations",
         "remove",
         "--project",
-        "libs/data-migrations/Project.Data.Migrations.csproj",
+        "libs/ordering-data/Project.Data.Models.csproj",
         "--startup-project",
         "apps/ordering-api/Project.API.csproj"
       ],

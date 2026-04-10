@@ -17,8 +17,11 @@ Polyglot monorepo demonstrating dev containers for an online ordering platform. 
 - `apps/menu-api/` — ASP.NET Core REST API for menu data with caching
 - `apps/order-processing-functions/` — Azure Functions (.NET 10, isolated worker) for order lifecycle state machine
 - `apps/notification-functions/` — Azure Functions (.NET 10, isolated worker) for event-triggered notifications
-- `libs/data-models/` — Shared EF Core DbContext and entity definitions
-- `libs/data-migrations/` — EF Core migration assemblies
+- `libs/ordering-data/` — EF Core DbContext, entities, and migrations for the ordering domain
+- `libs/menu-data/` — EF Core DbContext, entities, and migrations for the menu domain
+- `libs/payment-data/` — EF Core DbContext, entities, and migrations for the payment domain (PCI-isolated)
+- `libs/admin-data/` — EF Core DbContext, entities, and migrations for admin-specific data
+- `libs/kds-data/` — EF Core DbContext, entities, and migrations for KDS read model (event-populated)
 - `.devcontainer/` — Dev container config (Dockerfile + Docker Compose with PostgreSQL, Service Bus emulator, Azurite, Cosmos DB emulator, Event Hubs emulator, App Configuration emulator & admin UI sidecars)
 
 ## Build & Run
@@ -35,8 +38,8 @@ cd apps/ordering-api && dotnet run  # HTTP :5258, HTTPS :7130
 cd apps/notification-functions && func start  # Azure Functions local host on :7071
 
 # EF Core migrations (from repo root)
-dotnet ef migrations add <Name> --project libs/data-migrations --startup-project apps/ordering-api
-dotnet ef database update --project libs/data-migrations --startup-project apps/ordering-api
+dotnet ef migrations add <Name> --project libs/ordering-data --startup-project apps/ordering-api
+dotnet ef database update --project libs/ordering-data --startup-project apps/ordering-api
 ```
 
 ## Test & Lint
@@ -97,7 +100,8 @@ dotnet format                       # Formats all .cs files in solution
 The dev container uses Docker Compose with:
 
 - Primary container: Debian Bookworm base with Node.js + .NET SDK
-- Sidecar: PostgreSQL 17 (`Host=postgres;Port=5432;Database=app;Username=postgres;Password=postgres`)
+- Sidecar: PostgreSQL 17 — one instance, separate database per domain (`Host=postgres;Port=5432;Database=<ordering_db|menu_db|payment_db|admin_db|kds_db>;Username=postgres;Password=postgres`)
+- Sidecar: Keycloak — local identity provider for development (`http://keycloak:8080`, admin console at `http://localhost:8180`, admin/admin)
 - Sidecar: Azure Service Bus emulator (backed by MSSQL) (`Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;`)
 - Sidecar: Azurite — Azure Storage emulator for Blob, Queue, and Table services (`DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;...;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;`)
 - Sidecar: Azure Cosmos DB emulator (Linux) (`AccountEndpoint=https://cosmosdb:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QypfDERNfnKC0JV3rGK5rf8T3OZZhL/1YMYVRXQS97vDvKnDRQ==;`)
@@ -106,7 +110,7 @@ The dev container uses Docker Compose with:
 - Sidecar: Redis 7 (`redis:6379`)
 - Sidecar: Mailpit — local SMTP server with web UI (SMTP on `mailpit:1025`, web UI on `mailpit:8025`)
 - Sidecar: EventHub Explorer — web UI for Event Hubs, Service Bus, and Storage Queues (`http://localhost:5235`)
-- Ports: 5173 (Vite), 5258 (HTTP API), 7130 (HTTPS API), 7071 (Azure Functions), 1025 (Mailpit SMTP), 5432 (PostgreSQL), 6379 (Redis), 8025 (Mailpit Web UI), 8483 (App Configuration), 8081 (Cosmos DB), 9092 (Event Hubs Kafka), 10000-10002 (Azurite), 5235 (EventHub Explorer)
+- Ports: 5173 (Vite), 5258 (HTTP API), 7130 (HTTPS API), 7071 (Azure Functions), 1025 (Mailpit SMTP), 5432 (PostgreSQL), 6379 (Redis), 8025 (Mailpit Web UI), 8180 (Keycloak), 8483 (App Configuration), 8081 (Cosmos DB), 9092 (Event Hubs Kafka), 10000-10002 (Azurite), 5235 (EventHub Explorer)
 
 ## Documentation Maintenance
 

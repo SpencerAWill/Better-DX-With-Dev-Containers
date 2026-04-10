@@ -5,7 +5,7 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 ## What This Demonstrates
 
 - **Dev container configuration** with Docker Compose for multi-service orchestration
-- **Sidecar containers** (PostgreSQL, Redis, Mailpit, Azure Service Bus emulator, Azurite, Azure Cosmos DB emulator, Azure Event Hubs emulator, Azure App Configuration emulator) running alongside the development environment
+- **Sidecar containers** (PostgreSQL, Redis, Keycloak, Mailpit, Azure Service Bus emulator, Azurite, Azure Cosmos DB emulator, Azure Event Hubs emulator, Azure App Configuration emulator) running alongside the development environment
 - **Admin UI sidecar** (EventHub Explorer) for visual introspection of messaging services
 - **Multi-language support** (TypeScript + C#) within a single dev container
 - **Nx-style monorepo layout** with `apps/` and `libs/` for clear separation of concerns
@@ -45,8 +45,11 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 │       ├── Program.cs             # Functions host entry point
 │       └── Project.Functions.csproj
 ├── libs/
-│   ├── data-models/               # Shared EF Core DbContext & entities
-│   └── data-migrations/           # EF Core database migrations
+│   ├── ordering-data/             # EF Core DbContext, entities & migrations (ordering domain)
+│   ├── menu-data/                 # EF Core DbContext, entities & migrations (menu domain)
+│   ├── payment-data/              # EF Core DbContext, entities & migrations (payment domain, PCI-isolated)
+│   ├── admin-data/                # EF Core DbContext, entities & migrations (admin domain)
+│   └── kds-data/                  # EF Core DbContext, entities & migrations (KDS read model)
 ├── Project.slnx                   # .NET solution file
 ├── pnpm-workspace.yaml            # PNPM workspace configuration
 └── package.json                   # Root workspace tooling
@@ -85,7 +88,7 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 1. Clone the repository
 2. Open the folder in VS Code
 3. When prompted, click **"Reopen in Container"** (or run the command `Dev Containers: Reopen in Container`)
-4. The container builds with all dependencies — Node.js, .NET SDK, PostgreSQL sidecar, Redis, Mailpit, Service Bus emulator, Azurite (Azure Storage emulator), Cosmos DB emulator, Event Hubs emulator, App Configuration emulator, admin UI sidecar (EventHub Explorer), and CLI tools — ready to go
+4. The container builds with all dependencies — Node.js, .NET SDK, PostgreSQL sidecar, Redis, Keycloak, Mailpit, Service Bus emulator, Azurite (Azure Storage emulator), Cosmos DB emulator, Event Hubs emulator, App Configuration emulator, admin UI sidecar (EventHub Explorer), and CLI tools — ready to go
 
 Everything is configured automatically. No local SDK installs required.
 
@@ -142,6 +145,7 @@ Use the preconfigured VS Code tasks (`Terminal → Run Task`):
 | 8025  | Mailpit Web UI                           |
 | 8483  | Azure App Configuration                  |
 | 9092  | Azure Event Hubs (Kafka)                 |
+| 8180  | Keycloak Admin Console                   |
 | 5235  | EventHub Explorer                        |
 
 ## Dev Container Architecture

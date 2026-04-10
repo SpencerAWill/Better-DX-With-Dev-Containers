@@ -42,23 +42,24 @@
   },
   "remoteUser": "vscode",
   "forwardPorts": [
-    5173, // Forward the webapp Vite development server port
-    5258, // Forward the webapi HTTP port
-    7130, // Forward the webapi HTTPS port
+    5173, // Forward the ordering-web Vite development server port
+    5258, // Forward the ordering-api HTTP port
+    7130, // Forward the ordering-api HTTPS port
     7071, // Forward the Azure Functions port (func start)
-    7028 // Forward the Azure Functions port (dotnet run)
+    7028, // Forward the Azure Functions port (dotnet run)
+    8180 // Forward the Keycloak admin console port
   ],
   "portsAttributes": {
     "5173": {
-      "label": "webapp (Vite Dev Server)",
+      "label": "ordering-web (Vite Dev Server)",
       "onAutoForward": "notify"
     },
     "5258": {
-      "label": "webapi (HTTP)",
+      "label": "ordering-api (HTTP)",
       "onAutoForward": "notify"
     },
     "7130": {
-      "label": "webapi (HTTPS)",
+      "label": "ordering-api (HTTPS)",
       "onAutoForward": "notify"
     },
     "5432": {
@@ -115,6 +116,10 @@
     },
     "8025": {
       "label": "Mailpit (Web UI)",
+      "onAutoForward": "notify"
+    },
+    "8180": {
+      "label": "Keycloak Admin Console",
       "onAutoForward": "notify"
     },
     "5235": {
