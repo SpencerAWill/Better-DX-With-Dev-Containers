@@ -355,6 +355,57 @@ An API gateway (routing, rate limiting, auth enforcement) was considered as a pr
 - **Future real-time requirements** — Admin features may need WebSocket/SSE connections for live dashboards, order monitoring, or inventory alerts. Serverless doesn't support persistent connections.
 - **Simpler migration path** — Starting as an API and moving to serverless later is straightforward. The reverse (serverless to API for real-time support) is a larger rewrite.
 
+### Ordering domain is event-sourced; other domains remain CRUD
+
+The ordering domain is modeled as an append-only log of domain events (`OrderPlaced`, `OrderPaymentConfirmed`, `OrderConfirmed`, `OrderPreparing`, `OrderReady`, `OrderPickedUp`, `OrderCancelled`). An order's current state is a projection — maintained in `ordering_db` as a read-model table for fast queries, and rebuildable from the event log at any time. Menu, payment, admin, KDS, and store-gateway domains stay CRUD.
+
+**Event log shape** (lives in `ordering_db`, owned by `ordering-data`):
+
+```
+OrderEvents       { Id (UUIDv7, event id),
+                    AggregateId (UUIDv7, order id),
+                    SequenceNumber (int, per-aggregate),
+                    EventType (string),
+                    Payload (jsonb),
+                    OccurredAt,
+                    CausationId, CorrelationId }
+
+OrderReadModel    { AggregateId (PK), PublicOrderId, Status, UserId, CustomerEmail,
+                    CustomerName, TotalInCents, StripePaymentIntentId,
+                    LastSequenceApplied, CreatedAt, UpdatedAt }
+```
+
+Append-event + update-read-model + insert-outbox-row happen in one PostgreSQL transaction.
+
+**Why event-source the ordering domain specifically:**
+
+- **Edge/cloud reconciliation becomes log replay, not conflict resolution.** Events are immutable facts; edge and cloud produce different events (for different orders, or different lifecycle steps on the same order) that never conflict at the row level. The store-gateway forwards events and the cloud projects them. The "cloud wins vs. edge wins" rule for order state disappears.
+- **Projections are first-class.** `kds_db`, Cosmos `KitchenTickets`, Cosmos `CustomerOrders`, and Cosmos `Analytics` are all projections of the same event stream. Today's architecture already describes them as derived views populated by events — event sourcing makes this literal rather than aspirational.
+- **The outbox collapses into the event log.** The store-gateway outbox forwarder reads unsent rows from `OrderEvents` by `SequenceNumber` and publishes them to cloud Event Hubs. No separate outbox table for order events.
+- **Free audit trail.** Required anyway for admin-api compliance reporting and dispute resolution.
+- **Retroactive projections.** New read models (e.g., a delivery-time analytics view) can be built by replaying events without backfill migrations.
+
+**Why not event-source other domains:**
+
+- **Menu** — CRUD matches admin authoring patterns; relational integrity rules (a modifier belongs to an item, an item belongs to a category) are easier to enforce in SQL; the Cosmos `MenuCatalog` is already the denormalized read side.
+- **Payment** — Stripe is the source of truth; `payment_db` is a local mirror for PCI-isolated records. Layering event sourcing on top widens the compliance surface without benefit.
+- **Admin** — Primarily configuration plus audit. The audit table is already append-only; there's no aggregate lifecycle to model.
+- **KDS / store-gateway** — Read models and operational data, not aggregates.
+
+**Event store choice: PostgreSQL, not a dedicated event store.** EventStoreDB, Cosmos change feed, or a Kafka-backed store were rejected because:
+
+- Appending the event, updating the read model, and writing the outbox row must be atomic. PostgreSQL gives this for free in a single transaction; anything else requires two-phase commit or a saga.
+- Same engine edge and cloud — the store-gateway sync story stays simple.
+- No new sidecar to operate.
+- Tooling options on .NET + PostgreSQL (Marten, or a thin DIY layer on EF Core with an append-only `OrderEvents` table) are mature.
+
+**Tradeoffs accepted:**
+
+- **Event schemas are load-bearing contracts.** Once written to the log, event shapes are forever. The `contracts` library owns versioned event schemas; breaking changes require new event types plus upcasters on the read side.
+- **Ad-hoc "current state" queries** go through `OrderReadModel`, not the event log. Acceptable — the read model exists for exactly this.
+- **Projections can drift.** A bug in a projection handler can leave `kds_db` or a Cosmos container inconsistent with the log. Mitigation: projections are rebuildable — a `RebuildProjection` admin command replays events into a fresh store.
+- **Cross-domain events need a clear rule.** When `payment-api` emits `PaymentSucceeded` (a payment-domain event), does `order-processing-functions` append a corresponding `OrderPaymentConfirmed` to the order's stream, or do consumers of order state read both streams? Initial rule: cross-domain events trigger the ordering aggregate to append its own event — the order's stream is the complete narrative for that order. Revisit if it becomes onerous.
+
 ---
 
 ## Open Design Decisions

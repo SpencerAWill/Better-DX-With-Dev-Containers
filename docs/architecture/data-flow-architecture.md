@@ -33,11 +33,25 @@ The platform is split into multiple bounded-context services, each owning its ow
 
 **ordering_db** (via `ordering-data` lib — used by ordering-api, order-processing-functions):
 
+The ordering domain is **event-sourced**. An order's state is an append-only log of domain events; the current state is a projection maintained in `OrderReadModel`. See `system-architecture.md` → Architectural Decision Records for the rationale.
+
 ```
-Order           { Id, PublicOrderId, Status, UserId (OIDC sub), CustomerEmail, CustomerName,
-                  TotalInCents, StripePaymentIntentId, CreatedAt, UpdatedAt }
-OrderLineItem   { Id, OrderId, MenuItemId, ItemName, Quantity, UnitPriceInCents }
+OrderEvents     { Id (UUIDv7, event id),
+                  AggregateId (UUIDv7, order id),
+                  SequenceNumber (int, per-aggregate),
+                  EventType,
+                  Payload (jsonb),
+                  OccurredAt,
+                  CausationId, CorrelationId }
+                 -- append-only; UNIQUE (AggregateId, SequenceNumber)
+
+OrderReadModel  { AggregateId (PK), PublicOrderId, Status, UserId (OIDC sub),
+                  CustomerEmail, CustomerName, TotalInCents, StripePaymentIntentId,
+                  ItemsJson, LastSequenceApplied, CreatedAt, UpdatedAt }
+                 -- rebuildable from OrderEvents
 ```
+
+Event types: `OrderPlaced`, `OrderPaymentConfirmed`, `OrderConfirmed`, `OrderPreparing`, `OrderReady`, `OrderPickedUp`, `OrderCancelled`. Payloads are defined in the `contracts` library.
 
 **menu_db** (via `menu-data` lib — used by menu-api exclusively):
 
@@ -192,10 +206,18 @@ Frontends: OIDC clients — redirect to Keycloak for login, store tokens
 ### Redis Keys
 
 ```
-menu:catalog                -> cached JSON of full menu catalog from Cosmos DB (TTL: 5 min)
-cart:{userId}               -> hash of itemId -> { qty, name, price } (TTL: 2 hr)
+menu:catalog                 -> cached JSON of full menu catalog from Cosmos DB (TTL: 5 min)
+cart:{userId}                -> hash of itemId -> { qty, name, price } (TTL: 2 hr)
 order-status:{publicOrderId} -> cached status string (TTL: 30 sec)
+idempotency:{key}            -> cached response body for retried POSTs (TTL: 24 hr)
+                                keys: checkout requests, payment intent creation, outbox forwarding
+ratelimit:{scope}:{id}       -> sliding-window counter (TTL: window size)
+                                scopes: login attempts per user, checkout attempts per user,
+                                payment-intent creations per order
+projection:event-seen:{eventId} -> deduplication marker for projection handlers (TTL: 7 days)
 ```
+
+**Idempotency keys** matter under event sourcing because the store-gateway retries forwarding events to cloud Event Hubs on network failure. The cloud-side projection handlers dedupe on event id via `projection:event-seen:{eventId}` before applying. The client-facing idempotency keys (`idempotency:{key}`) protect checkout and payment-intent creation from double-submission.
 
 ### Azurite Blob Storage
 
@@ -306,25 +328,35 @@ ordering-web -> POST/DELETE/GET /cart/items -> ordering-api (userId from JWT sub
 
 ```
 ordering-web -> POST /checkout -> ordering-api (userId, email, name from JWT claims)
+                                  |-> Redis: CHECK idempotency:{Idempotency-Key header}
+                                  |     +-- HIT -> return cached response (safe retry)
                                   |-> Redis: HGETALL cart:{userId} (retrieve cart)
                                   |-> App Configuration: READ Checkout:MaxItemsPerOrder (validate)
                                   |-> ordering_db: BEGIN TRANSACTION
-                                  |     INSERT Order (status: "pending-payment", UserId from JWT sub)
-                                  |     INSERT OrderLineItems
+                                  |     APPEND OrderEvents: OrderPlaced
+                                  |       { aggregateId, publicOrderId, userId, email, name,
+                                  |         items[], totalInCents }
+                                  |     UPSERT OrderReadModel (status: "pending-payment")
+                                  |     INSERT OutboxEvent (one row per event to forward)
                                   |     COMMIT
                                   |-> payment-api: Create PaymentIntent (amount, metadata: { orderId })
                                   |     +-> localstripe: Create PaymentIntent via Stripe SDK
                                   |     +-> payment_db: INSERT PaymentIntent record
                                   |-> Azurite Table: INSERT OrderAudit (action: "order-created")
-                                  |-> Event Hubs: PUBLISH { type: "order-placed", ... }
+                                  |-> Redis: SET idempotency:{key} -> response (TTL 24h)
                                   +-> Response: { clientSecret, publicOrderId }
+
+Outbox forwarder (background, in ordering-api or store-gateway at edge):
+  -> ordering_db: SELECT OrderEvents WHERE outbox_forwarded = false ORDER BY SequenceNumber
+  -> Event Hubs: PUBLISH { type: "OrderPlaced", aggregateId, sequence, payload, ... }
+  -> ordering_db: UPDATE outbox row SET forwarded_at = now()
 ```
 
-**Why ordering_db for the write:** This is a transaction that must be atomic — the order and its line items either both exist or neither does. Relational integrity (line item references valid order and menu item) matters here. This is the system of record.
+**Why event sourcing for the write:** Ordering is the one domain where edge and cloud both write concurrently during a network partition. Event sourcing turns reconciliation into log replay — edge-emitted events and cloud-emitted events are immutable facts that compose without conflict resolution. The append-event + update-read-model + insert-outbox-row transaction guarantees no event is published without being persisted (and vice versa). See `system-architecture.md` for the full rationale.
 
 **Why payment-api is a separate call:** Payment processing is isolated in its own service with its own database (payment_db) for PCI compliance. ordering-api never touches Stripe directly. At the edge, payment-api uses store-and-forward to queue payments for cloud processing.
 
-**Why Event Hubs here:** The "order placed" event is a fact that multiple consumers may care about (analytics, dashboards). Event Hubs is for broadcast; it doesn't care who reads it.
+**Why Event Hubs is fed from the outbox (not directly from the endpoint):** Publishing to Event Hubs from inside the request handler introduces a dual-write problem — the DB commit can succeed and the Event Hubs publish can fail (or vice versa). Writing the event to `OrderEvents` atomically with the read-model update, then letting a background forwarder publish it, gives exactly-once-to-log semantics with at-least-once-to-subscribers. Consumers dedupe on event id.
 
 ### 4. Payment Confirmation (Webhook)
 
@@ -348,18 +380,22 @@ Note: ordering-api also updates the order status in ordering_db when it receives
 
 ```
 Service Bus: "order-placed" queue -> order-processing-functions: OrderPlacedHandler
-                                      |-> ordering_db: UPDATE Order SET Status = "confirmed"
-                                      |-> Event Hubs: PUBLISH { type: "order-confirmed", ... }
-                                      |     (consumed by kds-api to populate kds_db,
-                                      |      consumed by notification-functions for email)
-                                      |-> Cosmos DB [KitchenTickets]: INSERT ticket document
+                                      |-> Redis: CHECK projection:event-seen:{eventId}
+                                      |     +-- HIT -> skip (already processed)
+                                      |-> ordering_db: BEGIN TRANSACTION
+                                      |     APPEND OrderEvents: OrderPaymentConfirmed, OrderConfirmed
+                                      |     UPSERT OrderReadModel (status: "confirmed")
+                                      |     INSERT OutboxEvent (for downstream Event Hubs broadcast)
+                                      |     COMMIT
+                                      |-> Cosmos DB [KitchenTickets]: INSERT ticket document (projection)
                                       |     (denormalized: customer name, item names, qty, status: "received")
-                                      |-> Cosmos DB [CustomerOrders]: UPSERT — append order to customer's history
+                                      |-> Cosmos DB [CustomerOrders]: UPSERT — append order to customer's history (projection)
                                       |     (publicOrderId, item summary, total, status, receipt URL)
                                       |-> Azurite Blob: UPLOAD receipts/{publicOrderId}.html
                                       |     (generated HTML receipt with order details)
                                       |-> Azurite Table: INSERT OrderAudit entries for each step
-                                      +-> Redis: SET order-status:{publicOrderId} = "received" (TTL 30s)
+                                      |-> Redis: SET order-status:{publicOrderId} = "received" (TTL 30s)
+                                      +-> Redis: SET projection:event-seen:{eventId} (TTL 7 days)
 ```
 
 ```
@@ -412,8 +448,9 @@ kds-web -> POST /tickets/{id}/status -> kds-api
 
 ```
 Event Hubs: "status-changed" -> order-processing-functions
-                                 +-> ordering_db: UPDATE Order.Status
-                                 +-> Cosmos DB [KitchenTickets]: UPDATE status
+                                 +-> ordering_db: APPEND OrderEvents (OrderPreparing | OrderReady | OrderPickedUp)
+                                 |                + UPSERT OrderReadModel.Status (one transaction)
+                                 +-> Cosmos DB [KitchenTickets]: UPDATE status (projection)
 ```
 
 ```
@@ -576,19 +613,21 @@ Service: store-gateway                                                          
 
 ## Key Architectural Patterns Demonstrated
 
-1. **CQRS (two instances)**
-   - Orders: ordering_db (write) -> Cosmos DB KitchenTickets + CustomerOrders (read) + kds_db (edge read model)
-   - Menu: menu_db (write/admin) -> Cosmos DB MenuCatalog (read/customer)
-2. **Database-per-Bounded-Context** — Each domain (ordering, menu, payment, admin, KDS) has its own PostgreSQL database. Services communicate via APIs or events, not shared databases.
-3. **Cache-Aside** — Redis in front of Cosmos DB for both menu and order status
-4. **Async Command Processing** — Service Bus queue decouples Stripe webhook from heavy downstream work
-5. **Event Streaming + Materialized Views** — Event Hubs broadcasts lifecycle events; AnalyticsProcessor consumes them into pre-aggregated Cosmos DB views
-6. **Event-Driven Read Model** — kds_db is populated via events from order-processing-functions, not by sharing the ordering database. Enables offline operation and data isolation.
-7. **Feature Flags** — App Configuration controls runtime behavior (UI fields, tracking mode, cart limits) without redeployment
-8. **Saga/Orchestration** — OrderPlacedHandler coordinates multiple side effects from a single Service Bus trigger
-9. **Blob Storage for Static Assets** — Menu images and receipts in Azurite, referenced by URL from Cosmos DB and API responses
-10. **Append-Only Audit Trail** — Azurite Table Storage captures every processing step as immutable records
-11. **Store-and-Forward (Outbox Pattern)** — Edge services write events to a local outbox table; the store-gateway forwards them to cloud messaging when online. Enables offline operation.
+1. **Event Sourcing (ordering domain)** — Order state is an append-only log of events (`OrderEvents`) with a projection (`OrderReadModel`) for fast reads. All other ordering-shaped data stores (kds_db, Cosmos KitchenTickets, Cosmos CustomerOrders, Cosmos Analytics) are projections of the same event stream. See `system-architecture.md` ADR.
+2. **CQRS (two instances)**
+   - Orders: `ordering_db` event log (write) -> `OrderReadModel` + Cosmos `KitchenTickets` + Cosmos `CustomerOrders` + `kds_db` (all projections)
+   - Menu: `menu_db` (write/admin) -> Cosmos DB `MenuCatalog` (read/customer)
+3. **Database-per-Bounded-Context** — Each domain (ordering, menu, payment, admin, KDS) has its own PostgreSQL database. Services communicate via APIs or events, not shared databases.
+4. **Cache-Aside** — Redis in front of Cosmos DB for both menu and order status.
+5. **Idempotent Retries** — Redis-backed idempotency keys for client POSTs (checkout, payment intent) and event-id dedup markers for projection handlers.
+6. **Async Command Processing** — Service Bus queue decouples Stripe webhook from heavy downstream work.
+7. **Event Streaming + Materialized Views** — Event Hubs broadcasts lifecycle events; AnalyticsProcessor consumes them into pre-aggregated Cosmos DB views.
+8. **Transactional Outbox (collapsed into the event log)** — The event-sourced `OrderEvents` table is itself the outbox. A forwarder reads unsent events by `SequenceNumber` and publishes to Event Hubs atomically-once-from-source.
+9. **Feature Flags** — App Configuration controls runtime behavior (UI fields, tracking mode, cart limits) without redeployment.
+10. **Saga/Orchestration** — `OrderPlacedHandler` coordinates multiple side effects from a single Service Bus trigger.
+11. **Blob Storage for Static Assets** — Menu images and receipts in Azurite, referenced by URL from Cosmos DB and API responses.
+12. **Append-Only Audit Trail** — Azurite Table Storage captures every processing step as immutable records (in addition to the event log itself, which is inherently audit-ready for the ordering domain).
+13. **Edge/Cloud Log Replay** — Because ordering is event-sourced, edge-originated and cloud-originated events compose without conflict resolution — the store-gateway forwards events and the cloud projects them in arrival order.
 
 ---
 
