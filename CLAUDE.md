@@ -23,6 +23,9 @@ Polyglot monorepo demonstrating dev containers for an online ordering platform. 
 - `libs/payment-data/` — EF Core DbContext, entities, and migrations for the payment domain (PCI-isolated)
 - `libs/admin-data/` — EF Core DbContext, entities, and migrations for admin-specific data
 - `libs/kds-data/` — EF Core DbContext, entities, and migrations for KDS read model (event-populated)
+- `libs/store-data/` — EF Core DbContext, entities, and migrations for store-gateway operational data (edge only)
+- `libs/contracts/` — Shared event, command, and DTO definitions for inter-service communication
+- `libs/common/` — Shared infrastructure (auth middleware, client credentials, correlation IDs, health checks, outbox pattern)
 - `.devcontainer/` — Dev container config (Dockerfile + Docker Compose with PostgreSQL, Service Bus emulator, Azurite, Cosmos DB emulator, Event Hubs emulator, App Configuration emulator & admin UI sidecars)
 
 ## Build & Run
@@ -101,7 +104,7 @@ dotnet format                       # Formats all .cs files in solution
 The dev container uses Docker Compose with:
 
 - Primary container: Debian Bookworm base with Node.js + .NET SDK
-- Sidecar: PostgreSQL 17 — one instance, separate database per domain (`Host=postgres;Port=5432;Database=<ordering_db|menu_db|payment_db|admin_db|kds_db>;Username=postgres;Password=postgres`)
+- Sidecar: PostgreSQL 17 — one instance, separate database per domain (`Host=postgres;Port=5432;Database=<ordering_db|menu_db|payment_db|admin_db|kds_db|store_db>;Username=postgres;Password=postgres`)
 - Sidecar: Keycloak — local identity provider for development (`http://keycloak:8080`, admin console at `http://localhost:8180`, admin/admin)
 - Sidecar: Azure Service Bus emulator (backed by MSSQL) (`Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;`)
 - Sidecar: Azurite — Azure Storage emulator for Blob, Queue, and Table services (`DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;...;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;`)

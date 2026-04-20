@@ -50,7 +50,10 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 │   ├── menu-data/                 # EF Core DbContext, entities & migrations (menu domain)
 │   ├── payment-data/              # EF Core DbContext, entities & migrations (payment domain, PCI-isolated)
 │   ├── admin-data/                # EF Core DbContext, entities & migrations (admin domain)
-│   └── kds-data/                  # EF Core DbContext, entities & migrations (KDS read model)
+│   ├── kds-data/                  # EF Core DbContext, entities & migrations (KDS read model)
+│   ├── store-data/                # EF Core DbContext, entities & migrations (store-gateway, edge only)
+│   ├── contracts/                 # Shared event, command & DTO schemas for inter-service communication
+│   └── common/                    # Shared infrastructure (auth, correlation IDs, health checks, outbox)
 ├── Project.slnx                   # .NET solution file
 ├── pnpm-workspace.yaml            # PNPM workspace configuration
 └── package.json                   # Root workspace tooling
