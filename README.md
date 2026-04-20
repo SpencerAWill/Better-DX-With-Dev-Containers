@@ -40,10 +40,11 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 │   ├── payment-api/               # Payment processing API (C# / .NET 10, Stripe)
 │   ├── menu-api/                  # Menu data REST API with caching (C# / .NET 10)
 │   ├── order-processing-functions/  # Order lifecycle state machine (Azure Functions)
-│   └── notification-functions/    # Event-triggered notifications (Azure Functions)
-│       ├── HealthCheck.cs         # HTTP-triggered health check function
-│       ├── Program.cs             # Functions host entry point
-│       └── Project.Functions.csproj
+│   ├── notification-functions/    # Event-triggered notifications (Azure Functions)
+│   │   ├── HealthCheck.cs         # HTTP-triggered health check function
+│   │   ├── Program.cs             # Functions host entry point
+│   │   └── Project.Functions.csproj
+│   └── store-gateway/             # Edge-to-cloud sync agent (.NET worker service)
 ├── libs/
 │   ├── ordering-data/             # EF Core DbContext, entities & migrations (ordering domain)
 │   ├── menu-data/                 # EF Core DbContext, entities & migrations (menu domain)

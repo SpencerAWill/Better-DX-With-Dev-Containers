@@ -17,6 +17,7 @@ Polyglot monorepo demonstrating dev containers for an online ordering platform. 
 - `apps/menu-api/` — ASP.NET Core REST API for menu data with caching
 - `apps/order-processing-functions/` — Azure Functions (.NET 10, isolated worker) for order lifecycle state machine
 - `apps/notification-functions/` — Azure Functions (.NET 10, isolated worker) for event-triggered notifications
+- `apps/store-gateway/` — .NET worker service for edge-to-cloud sync, outbox forwarding, and connectivity monitoring
 - `libs/ordering-data/` — EF Core DbContext, entities, and migrations for the ordering domain
 - `libs/menu-data/` — EF Core DbContext, entities, and migrations for the menu domain
 - `libs/payment-data/` — EF Core DbContext, entities, and migrations for the payment domain (PCI-isolated)
