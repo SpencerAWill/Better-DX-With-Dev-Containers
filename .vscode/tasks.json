@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "EF: Add Migration",
+      "label": "EF: Add Migration (ordering)",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -25,7 +25,7 @@
       }
     },
     {
-      "label": "EF: Update Database",
+      "label": "EF: Update Database (ordering)",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -47,7 +47,7 @@
       }
     },
     {
-      "label": "EF: Remove Last Migration",
+      "label": "EF: Remove Last Migration (ordering)",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -69,7 +69,342 @@
       }
     },
     {
-      "label": "clean (functions)",
+      "label": "EF: Add Migration (menu)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "migrations",
+        "add",
+        "${input:migrationName}",
+        "--project",
+        "libs/menu-data/OrderingPlatform.Menu.Data.csproj",
+        "--startup-project",
+        "apps/menu-api/OrderingPlatform.Menu.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Update Database (menu)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "database",
+        "update",
+        "--project",
+        "libs/menu-data/OrderingPlatform.Menu.Data.csproj",
+        "--startup-project",
+        "apps/menu-api/OrderingPlatform.Menu.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Remove Last Migration (menu)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "migrations",
+        "remove",
+        "--project",
+        "libs/menu-data/OrderingPlatform.Menu.Data.csproj",
+        "--startup-project",
+        "apps/menu-api/OrderingPlatform.Menu.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Add Migration (payment)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "migrations",
+        "add",
+        "${input:migrationName}",
+        "--project",
+        "libs/payment-data/OrderingPlatform.Payment.Data.csproj",
+        "--startup-project",
+        "apps/payment-api/OrderingPlatform.Payment.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Update Database (payment)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "database",
+        "update",
+        "--project",
+        "libs/payment-data/OrderingPlatform.Payment.Data.csproj",
+        "--startup-project",
+        "apps/payment-api/OrderingPlatform.Payment.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Remove Last Migration (payment)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "migrations",
+        "remove",
+        "--project",
+        "libs/payment-data/OrderingPlatform.Payment.Data.csproj",
+        "--startup-project",
+        "apps/payment-api/OrderingPlatform.Payment.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Add Migration (admin)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "migrations",
+        "add",
+        "${input:migrationName}",
+        "--project",
+        "libs/admin-data/OrderingPlatform.Admin.Data.csproj",
+        "--startup-project",
+        "apps/admin-api/OrderingPlatform.Admin.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Update Database (admin)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "database",
+        "update",
+        "--project",
+        "libs/admin-data/OrderingPlatform.Admin.Data.csproj",
+        "--startup-project",
+        "apps/admin-api/OrderingPlatform.Admin.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Remove Last Migration (admin)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "migrations",
+        "remove",
+        "--project",
+        "libs/admin-data/OrderingPlatform.Admin.Data.csproj",
+        "--startup-project",
+        "apps/admin-api/OrderingPlatform.Admin.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Add Migration (kds)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "migrations",
+        "add",
+        "${input:migrationName}",
+        "--project",
+        "libs/kds-data/OrderingPlatform.Kds.Data.csproj",
+        "--startup-project",
+        "apps/kds-api/OrderingPlatform.Kds.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Update Database (kds)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "database",
+        "update",
+        "--project",
+        "libs/kds-data/OrderingPlatform.Kds.Data.csproj",
+        "--startup-project",
+        "apps/kds-api/OrderingPlatform.Kds.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Remove Last Migration (kds)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "migrations",
+        "remove",
+        "--project",
+        "libs/kds-data/OrderingPlatform.Kds.Data.csproj",
+        "--startup-project",
+        "apps/kds-api/OrderingPlatform.Kds.Api.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Add Migration (store)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "migrations",
+        "add",
+        "${input:migrationName}",
+        "--project",
+        "libs/store-data/OrderingPlatform.Store.Data.csproj",
+        "--startup-project",
+        "apps/store-gateway/OrderingPlatform.Store.Gateway.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Update Database (store)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "database",
+        "update",
+        "--project",
+        "libs/store-data/OrderingPlatform.Store.Data.csproj",
+        "--startup-project",
+        "apps/store-gateway/OrderingPlatform.Store.Gateway.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "EF: Remove Last Migration (store)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "ef",
+        "migrations",
+        "remove",
+        "--project",
+        "libs/store-data/OrderingPlatform.Store.Data.csproj",
+        "--startup-project",
+        "apps/store-gateway/OrderingPlatform.Store.Gateway.csproj"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "clean (notification-functions)",
       "command": "dotnet",
       "args": [
         "clean",
@@ -83,7 +418,7 @@
       }
     },
     {
-      "label": "build (functions)",
+      "label": "build (notification-functions)",
       "command": "dotnet",
       "args": [
         "build",
@@ -91,10 +426,9 @@
         "/consoleloggerparameters:NoSummary"
       ],
       "type": "process",
-      "dependsOn": "clean (functions)",
+      "dependsOn": "clean (notification-functions)",
       "group": {
-        "kind": "build",
-        "isDefault": true
+        "kind": "build"
       },
       "problemMatcher": "$msCompile",
       "options": {
@@ -102,7 +436,7 @@
       }
     },
     {
-      "label": "clean release (functions)",
+      "label": "clean release (notification-functions)",
       "command": "dotnet",
       "args": [
         "clean",
@@ -118,7 +452,7 @@
       }
     },
     {
-      "label": "publish (functions)",
+      "label": "publish (notification-functions)",
       "command": "dotnet",
       "args": [
         "publish",
@@ -128,7 +462,7 @@
         "/consoleloggerparameters:NoSummary"
       ],
       "type": "process",
-      "dependsOn": "clean release (functions)",
+      "dependsOn": "clean release (notification-functions)",
       "problemMatcher": "$msCompile",
       "options": {
         "cwd": "${workspaceFolder}/apps/notification-functions"
@@ -136,9 +470,86 @@
     },
     {
       "type": "func",
-      "dependsOn": "build (functions)",
+      "label": "run (notification-functions)",
+      "dependsOn": "build (notification-functions)",
       "options": {
         "cwd": "${workspaceFolder}/apps/notification-functions/bin/Debug/net10.0"
+      },
+      "command": "host start",
+      "isBackground": true,
+      "problemMatcher": "$func-dotnet-watch"
+    },
+    {
+      "label": "clean (order-processing-functions)",
+      "command": "dotnet",
+      "args": [
+        "clean",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "type": "process",
+      "problemMatcher": "$msCompile",
+      "options": {
+        "cwd": "${workspaceFolder}/apps/order-processing-functions"
+      }
+    },
+    {
+      "label": "build (order-processing-functions)",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "type": "process",
+      "dependsOn": "clean (order-processing-functions)",
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": "$msCompile",
+      "options": {
+        "cwd": "${workspaceFolder}/apps/order-processing-functions"
+      }
+    },
+    {
+      "label": "clean release (order-processing-functions)",
+      "command": "dotnet",
+      "args": [
+        "clean",
+        "--configuration",
+        "Release",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "type": "process",
+      "problemMatcher": "$msCompile",
+      "options": {
+        "cwd": "${workspaceFolder}/apps/order-processing-functions"
+      }
+    },
+    {
+      "label": "publish (order-processing-functions)",
+      "command": "dotnet",
+      "args": [
+        "publish",
+        "--configuration",
+        "Release",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "type": "process",
+      "dependsOn": "clean release (order-processing-functions)",
+      "problemMatcher": "$msCompile",
+      "options": {
+        "cwd": "${workspaceFolder}/apps/order-processing-functions"
+      }
+    },
+    {
+      "type": "func",
+      "label": "run (order-processing-functions)",
+      "dependsOn": "build (order-processing-functions)",
+      "options": {
+        "cwd": "${workspaceFolder}/apps/order-processing-functions/bin/Debug/net10.0"
       },
       "command": "host start",
       "isBackground": true,

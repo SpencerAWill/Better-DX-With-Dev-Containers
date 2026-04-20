@@ -1,14 +1,53 @@
 <Solution>
   <Folder Name="/apps/" />
+  <Folder Name="/apps/admin-api/">
+    <Project Path="apps/admin-api/OrderingPlatform.Admin.Api.csproj" />
+  </Folder>
+  <Folder Name="/apps/kds-api/">
+    <Project Path="apps/kds-api/OrderingPlatform.Kds.Api.csproj" />
+  </Folder>
+  <Folder Name="/apps/menu-api/">
+    <Project Path="apps/menu-api/OrderingPlatform.Menu.Api.csproj" />
+  </Folder>
   <Folder Name="/apps/notification-functions/">
     <Project Path="apps/notification-functions/OrderingPlatform.Notification.Functions.csproj" />
+  </Folder>
+  <Folder Name="/apps/order-processing-functions/">
+    <Project Path="apps/order-processing-functions/OrderingPlatform.OrderProcessing.Functions.csproj" />
   </Folder>
   <Folder Name="/apps/ordering-api/">
     <Project Path="apps/ordering-api/OrderingPlatform.Ordering.Api.csproj" />
   </Folder>
+  <Folder Name="/apps/payment-api/">
+    <Project Path="apps/payment-api/OrderingPlatform.Payment.Api.csproj" />
+  </Folder>
+  <Folder Name="/apps/store-gateway/">
+    <Project Path="apps/store-gateway/OrderingPlatform.Store.Gateway.csproj" />
+  </Folder>
   <Folder Name="/libs/" />
+  <Folder Name="/libs/admin-data/">
+    <Project Path="libs/admin-data/OrderingPlatform.Admin.Data.csproj" />
+  </Folder>
+  <Folder Name="/libs/common/">
+    <Project Path="libs/common/OrderingPlatform.Common.csproj" />
+  </Folder>
+  <Folder Name="/libs/contracts/">
+    <Project Path="libs/contracts/OrderingPlatform.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/libs/kds-data/">
+    <Project Path="libs/kds-data/OrderingPlatform.Kds.Data.csproj" />
+  </Folder>
+  <Folder Name="/libs/menu-data/">
+    <Project Path="libs/menu-data/OrderingPlatform.Menu.Data.csproj" />
+  </Folder>
   <Folder Name="/libs/ordering-data/">
     <Project Path="libs/ordering-data/OrderingPlatform.Ordering.Data.csproj" />
+  </Folder>
+  <Folder Name="/libs/payment-data/">
+    <Project Path="libs/payment-data/OrderingPlatform.Payment.Data.csproj" />
+  </Folder>
+  <Folder Name="/libs/store-data/">
+    <Project Path="libs/store-data/OrderingPlatform.Store.Data.csproj" />
   </Folder>
   <Folder Name="/tests/" />
   <Folder Name="/tests/OrderingPlatform.TestingCommon/">
@@ -28,5 +67,50 @@
   </Folder>
   <Folder Name="/tests/OrderingPlatform.Notification.Functions.IntegrationTests/">
     <Project Path="tests/OrderingPlatform.Notification.Functions.IntegrationTests/OrderingPlatform.Notification.Functions.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Admin.Api.UnitTests/">
+    <Project Path="tests/OrderingPlatform.Admin.Api.UnitTests/OrderingPlatform.Admin.Api.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Admin.Api.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.Admin.Api.IntegrationTests/OrderingPlatform.Admin.Api.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Admin.Data.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.Admin.Data.IntegrationTests/OrderingPlatform.Admin.Data.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Kds.Api.UnitTests/">
+    <Project Path="tests/OrderingPlatform.Kds.Api.UnitTests/OrderingPlatform.Kds.Api.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Kds.Api.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.Kds.Api.IntegrationTests/OrderingPlatform.Kds.Api.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Kds.Data.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.Kds.Data.IntegrationTests/OrderingPlatform.Kds.Data.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Menu.Api.UnitTests/">
+    <Project Path="tests/OrderingPlatform.Menu.Api.UnitTests/OrderingPlatform.Menu.Api.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Menu.Api.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.Menu.Api.IntegrationTests/OrderingPlatform.Menu.Api.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Menu.Data.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.Menu.Data.IntegrationTests/OrderingPlatform.Menu.Data.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.OrderProcessing.Functions.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.OrderProcessing.Functions.IntegrationTests/OrderingPlatform.OrderProcessing.Functions.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Payment.Api.UnitTests/">
+    <Project Path="tests/OrderingPlatform.Payment.Api.UnitTests/OrderingPlatform.Payment.Api.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Payment.Api.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.Payment.Api.IntegrationTests/OrderingPlatform.Payment.Api.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Payment.Data.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.Payment.Data.IntegrationTests/OrderingPlatform.Payment.Data.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Store.Data.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.Store.Data.IntegrationTests/OrderingPlatform.Store.Data.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Store.Gateway.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.Store.Gateway.IntegrationTests/OrderingPlatform.Store.Gateway.IntegrationTests.csproj" />
   </Folder>
 </Solution>
