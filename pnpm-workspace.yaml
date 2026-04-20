@@ -1,5 +1,8 @@
 packages:
   - "apps/ordering-web"
+  - "apps/admin-web"
+  - "apps/kds-web"
 allowBuilds:
   esbuild: true
+  lightningcss: true
   unrs-resolver: true
