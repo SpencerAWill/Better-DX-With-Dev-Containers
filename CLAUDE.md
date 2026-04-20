@@ -26,7 +26,15 @@ Polyglot monorepo demonstrating dev containers for an online ordering platform. 
 - `libs/store-data/` — EF Core DbContext, entities, and migrations for store-gateway operational data (edge only)
 - `libs/contracts/` — Shared event, command, and DTO definitions for inter-service communication
 - `libs/common/` — Shared infrastructure (auth middleware, client credentials, correlation IDs, health checks, outbox pattern)
+- `tests/OrderingPlatform.TestingCommon/` — Shared test fixtures (Postgres, WebApplicationFactory base, connection-string helpers); `IsTestProject=false`
+- `tests/OrderingPlatform.ArchitectureTests/` — NetArchTest layering rules across all production assemblies
+- `tests/OrderingPlatform.Ordering.Api.UnitTests/` — `ordering-api` pure-logic tests
+- `tests/OrderingPlatform.Ordering.Api.IntegrationTests/` — `ordering-api` via WebApplicationFactory
+- `tests/OrderingPlatform.Ordering.Data.IntegrationTests/` — `ordering-data` against the Postgres sidecar
+- `tests/OrderingPlatform.Notification.Functions.IntegrationTests/` — `notification-functions` handler tests
 - `.devcontainer/` — Dev container config (Dockerfile + Docker Compose with PostgreSQL, Service Bus emulator, Azurite, Cosmos DB emulator, Event Hubs emulator, App Configuration emulator & admin UI sidecars)
+
+Solution file: `OrderingPlatform.slnx` at the repo root. Assembly names follow `OrderingPlatform.{Domain}.{Role}` (e.g. `OrderingPlatform.Ordering.Api`, `OrderingPlatform.Notification.Functions`, `OrderingPlatform.Ordering.Data`).
 
 ## Build & Run
 
@@ -48,9 +56,16 @@ dotnet ef database update --project libs/ordering-data --startup-project apps/or
 
 ## Test & Lint
 
+Integration tests connect to the dev-container sidecars — run `dotnet test` from inside the dev container. See `docs/testing/testing-guide.md` for tiers and patterns.
+
 ```bash
+# .NET tests (from repo root)
+dotnet test OrderingPlatform.slnx
+dotnet test tests/OrderingPlatform.Ordering.Api.IntegrationTests   # single project
+
 # Frontend tests (ordering)
-cd apps/ordering-web && pnpm test   # Vitest
+cd apps/ordering-web && pnpm test        # Vitest (once)
+cd apps/ordering-web && pnpm test:watch  # Vitest (watch mode)
 
 # Linting (ordering)
 cd apps/ordering-web && pnpm lint   # ESLint
@@ -98,6 +113,7 @@ dotnet format                       # Formats all .cs files in solution
 - **Messaging:** Azure Service Bus (emulated via sidecar container)
 - **Storage:** Azure Storage (emulated via Azurite sidecar container)
 - **Package manager:** PNPM (workspaces) for JS, .NET CLI / `.slnx` solution for C#
+- **Testing:** xUnit, Shouldly, NSubstitute, Respawn, NetArchTest.Rules, Microsoft.AspNetCore.Mvc.Testing (.NET); Vitest, React Testing Library, @testing-library/jest-dom, MSW v2 (frontend)
 
 ## Dev Container
 

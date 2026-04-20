@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Project.Data.Models;
+namespace OrderingPlatform.Ordering.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {

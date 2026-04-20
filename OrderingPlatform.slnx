@@ -1,0 +1,32 @@
+<Solution>
+  <Folder Name="/apps/" />
+  <Folder Name="/apps/notification-functions/">
+    <Project Path="apps/notification-functions/OrderingPlatform.Notification.Functions.csproj" />
+  </Folder>
+  <Folder Name="/apps/ordering-api/">
+    <Project Path="apps/ordering-api/OrderingPlatform.Ordering.Api.csproj" />
+  </Folder>
+  <Folder Name="/libs/" />
+  <Folder Name="/libs/ordering-data/">
+    <Project Path="libs/ordering-data/OrderingPlatform.Ordering.Data.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/OrderingPlatform.TestingCommon/">
+    <Project Path="tests/OrderingPlatform.TestingCommon/OrderingPlatform.TestingCommon.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.ArchitectureTests/">
+    <Project Path="tests/OrderingPlatform.ArchitectureTests/OrderingPlatform.ArchitectureTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Ordering.Api.UnitTests/">
+    <Project Path="tests/OrderingPlatform.Ordering.Api.UnitTests/OrderingPlatform.Ordering.Api.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Ordering.Api.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.Ordering.Api.IntegrationTests/OrderingPlatform.Ordering.Api.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Ordering.Data.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.Ordering.Data.IntegrationTests/OrderingPlatform.Ordering.Data.IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/OrderingPlatform.Notification.Functions.IntegrationTests/">
+    <Project Path="tests/OrderingPlatform.Notification.Functions.IntegrationTests/OrderingPlatform.Notification.Functions.IntegrationTests.csproj" />
+  </Folder>
+</Solution>

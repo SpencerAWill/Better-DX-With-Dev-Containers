@@ -1,4 +1,4 @@
-using Project.API.Endpoints;
+using OrderingPlatform.Ordering.Api.Endpoints;
 using Stripe.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,3 +22,6 @@ app.MapStripeWebhookEndpoints();
 app.UseHttpsRedirection();
 
 app.Run();
+
+// Expose the implicit Program class so integration tests can use WebApplicationFactory<Program>.
+public partial class Program;

@@ -2,7 +2,7 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.Options;
 using Stripe;
 
-namespace Project.API.Endpoints;
+namespace OrderingPlatform.Ordering.Api.Endpoints;
 
 public record PaymentMethodDto {
     // TODO: payment method details

@@ -11,9 +11,9 @@
         "add",
         "${input:migrationName}",
         "--project",
-        "libs/ordering-data/Project.Data.Models.csproj",
+        "libs/ordering-data/OrderingPlatform.Ordering.Data.csproj",
         "--startup-project",
-        "apps/ordering-api/Project.API.csproj"
+        "apps/ordering-api/OrderingPlatform.Ordering.Api.csproj"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -33,9 +33,9 @@
         "database",
         "update",
         "--project",
-        "libs/ordering-data/Project.Data.Models.csproj",
+        "libs/ordering-data/OrderingPlatform.Ordering.Data.csproj",
         "--startup-project",
-        "apps/ordering-api/Project.API.csproj"
+        "apps/ordering-api/OrderingPlatform.Ordering.Api.csproj"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -55,9 +55,9 @@
         "migrations",
         "remove",
         "--project",
-        "libs/ordering-data/Project.Data.Models.csproj",
+        "libs/ordering-data/OrderingPlatform.Ordering.Data.csproj",
         "--startup-project",
-        "apps/ordering-api/Project.API.csproj"
+        "apps/ordering-api/OrderingPlatform.Ordering.Api.csproj"
       ],
       "options": {
         "cwd": "${workspaceFolder}"

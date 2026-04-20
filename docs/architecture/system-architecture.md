@@ -406,6 +406,34 @@ Append-event + update-read-model + insert-outbox-row happen in one PostgreSQL tr
 - **Projections can drift.** A bug in a projection handler can leave `kds_db` or a Cosmos container inconsistent with the log. Mitigation: projections are rebuildable — a `RebuildProjection` admin command replays events into a fresh store.
 - **Cross-domain events need a clear rule.** When `payment-api` emits `PaymentSucceeded` (a payment-domain event), does `order-processing-functions` append a corresponding `OrderPaymentConfirmed` to the order's stream, or do consumers of order state read both streams? Initial rule: cross-domain events trigger the ordering aggregate to append its own event — the order's stream is the complete narrative for that order. Revisit if it becomes onerous.
 
+### Testing strategy
+
+Tests live in a dedicated `tests/` tree at the repo root — flat, one `.csproj` per test project, named `{ProductionAssemblyName}.{Tier}`. Frontend tests stay co-located next to source (`*.test.tsx`). Five tiers, each with a defined scope:
+
+- **Unit** — pure logic, no I/O, in-memory only (`*.UnitTests` / `*.test.ts`)
+- **Integration** — one service wired to its real dependencies via dev-container sidecars (`*.IntegrationTests`)
+- **Component** — React components/hooks with mocked network via MSW (frontend-only, co-located)
+- **Architecture** — cross-assembly layering rules enforced with NetArchTest (`*.ArchitectureTests`, single project)
+- **End-to-end** — full-stack user journeys across services (`e2e/`, added when a journey can be traced end-to-end)
+
+**Project layout rationale:** A flat `tests/` tree with `{Name}.{Tier}` projects matches the convention used across Microsoft reference repos (eShop, Clean Architecture, ASP.NET samples) and scales better than mirroring `apps/` + `libs/` under `tests/`. Frontend tests are co-located per Vitest/Nx convention.
+
+**Framework choices:**
+
+- .NET: **xUnit** (runner), **Shouldly** (assertions — MIT, avoids FluentAssertions licensing change), **NSubstitute** (mocking), **Respawn** (DB reset), **Microsoft.AspNetCore.Mvc.Testing** (WebApplicationFactory), **NetArchTest.Rules** (layering)
+- Frontend: **Vitest**, **React Testing Library**, **@testing-library/jest-dom**, **MSW v2**
+- E2E (deferred until a journey wires up): **Playwright**
+
+**Integration tests reuse dev-container sidecars.** The emulators in `.devcontainer/docker-compose.yml` (Postgres, Service Bus, Event Hubs, Azurite, Cosmos, Redis, Keycloak) are the canonical test dependencies — no Testcontainers layer. Isolation is achieved with per-test-class database names (via `PostgresDatabase` fixture) and Respawn between tests. Consequence: tests must run from inside the dev container (or a CI job that brings the same compose file up).
+
+**Shared test helpers live under `tests/`, not `libs/`.** `libs/` stays production-only. `tests/OrderingPlatform.TestingCommon` is a non-test support library (`IsTestProject=false`) referenced by every integration test project for fixtures, WebApplicationFactory base classes, and connection-string helpers.
+
+**Tradeoffs accepted:**
+
+- **Tests require the dev container.** A developer running `dotnet test` on bare metal against no sidecars will fail the integration and architecture tiers. Unit tests still run anywhere.
+- **No consumer-driven contract testing (Pact).** Single-team monorepo — `libs/contracts` + integration tests are sufficient. Revisit if a second team starts consuming these events.
+- **Architecture tests operate on compiled assemblies.** New apps/libs must be explicitly registered in `LayeringTests.LoadAllProductionAssemblies` or they aren't covered. Accepted cost for reflection-over-configuration.
+
 ---
 
 ## Open Design Decisions

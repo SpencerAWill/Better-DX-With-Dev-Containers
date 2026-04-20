@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Project.Functions;
+namespace OrderingPlatform.Notification.Functions;
 
 public class HealthCheck
 {

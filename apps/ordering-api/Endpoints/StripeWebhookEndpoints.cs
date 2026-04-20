@@ -1,6 +1,6 @@
 using Stripe;
 
-namespace Project.API.Endpoints;
+namespace OrderingPlatform.Ordering.Api.Endpoints;
 
 public static class StripeWebhookEndpoints
 {

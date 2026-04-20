@@ -32,7 +32,7 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 │   ├── ordering-api/              # Shared API for ordering-web and ordering-mobile (C# / .NET 10)
 │   │   ├── Endpoints/             # Checkout & Stripe webhook endpoints
 │   │   ├── Program.cs             # Application entry point
-│   │   └── Project.API.csproj
+│   │   └── OrderingPlatform.Ordering.Api.csproj
 │   ├── admin-web/                 # Administrator back-office management web app
 │   ├── admin-api/                 # API for admin-web (C# / .NET 10)
 │   ├── kds-web/                   # Kitchen Display System web app
@@ -43,7 +43,7 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 │   ├── notification-functions/    # Event-triggered notifications (Azure Functions)
 │   │   ├── HealthCheck.cs         # HTTP-triggered health check function
 │   │   ├── Program.cs             # Functions host entry point
-│   │   └── Project.Functions.csproj
+│   │   └── OrderingPlatform.Notification.Functions.csproj
 │   └── store-gateway/             # Edge-to-cloud sync agent (.NET worker service)
 ├── libs/
 │   ├── ordering-data/             # EF Core DbContext, entities & migrations (ordering domain)
@@ -54,31 +54,45 @@ A demonstration of how to build and manage **dev containers** in a polyglot mono
 │   ├── store-data/                # EF Core DbContext, entities & migrations (store-gateway, edge only)
 │   ├── contracts/                 # Shared event, command & DTO schemas for inter-service communication
 │   └── common/                    # Shared infrastructure (auth, correlation IDs, health checks, outbox)
-├── Project.slnx                   # .NET solution file
+├── tests/                         # Test projects mirroring production assemblies
+│   ├── OrderingPlatform.TestingCommon/                      # Shared fixtures (Postgres, WebApplicationFactory base)
+│   ├── OrderingPlatform.ArchitectureTests/                  # NetArchTest layering rules
+│   ├── OrderingPlatform.Ordering.Api.UnitTests/             # ordering-api pure-logic tests
+│   ├── OrderingPlatform.Ordering.Api.IntegrationTests/      # ordering-api via WebApplicationFactory
+│   ├── OrderingPlatform.Ordering.Data.IntegrationTests/     # ordering-data against Postgres sidecar
+│   └── OrderingPlatform.Notification.Functions.IntegrationTests/  # notification-functions handler tests
+├── docs/
+│   ├── architecture/              # System & data-flow architecture, ADRs
+│   └── testing/                   # Testing guide (tiers, fixtures, conventions)
+├── OrderingPlatform.slnx          # .NET solution file
 ├── pnpm-workspace.yaml            # PNPM workspace configuration
 └── package.json                   # Root workspace tooling
 ```
 
+Assembly names follow `OrderingPlatform.{Domain}.{Role}` — e.g. `OrderingPlatform.Ordering.Api`, `OrderingPlatform.Notification.Functions`, `OrderingPlatform.Ordering.Data`. Folders keep the Nx-style `{domain}-{platform}` kebab-case convention.
+
 ## Tech Stack
 
-| Layer                 | Technology                                                  |
-| --------------------- | ----------------------------------------------------------- |
-| **Frontend (Web)**    | React 19, TanStack Router & Query, Vite, Tailwind CSS 4     |
-| **Frontend (Mobile)** | TBD                                                         |
-| **Backend (APIs)**    | ASP.NET Core (.NET 10), Stripe SDK                          |
-| **Background**        | Azure Functions v4 (.NET 10 isolated worker)                |
-| **Payments**          | Stripe (isolated in payment-api)                            |
-| **Identity**          | Keycloakify / Azure Entra ID (infrastructure)               |
-| **Database**          | PostgreSQL 17 (sidecar container), Entity Framework Core 10 |
-| **Messaging**         | Azure Service Bus (emulated via sidecar container)          |
-| **Storage**           | Azure Storage (emulated via Azurite sidecar container)      |
-| **NoSQL Database**    | Azure Cosmos DB (emulated via sidecar container)            |
-| **Event Streaming**   | Azure Event Hubs (emulated via sidecar container)           |
-| **Configuration**     | Azure App Configuration (emulated via sidecar container)    |
-| **Caching**           | Redis 7 (sidecar container)                                 |
-| **Email**             | Mailpit — local SMTP server with web UI (sidecar container) |
-| **Dev Environment**   | Dev Containers, Docker Compose, PNPM workspaces             |
-| **Code Quality**      | ESLint, Prettier, `dotnet format`, Husky, Commitlint        |
+| Layer                 | Technology                                                       |
+| --------------------- | ---------------------------------------------------------------- |
+| **Frontend (Web)**    | React 19, TanStack Router & Query, Vite, Tailwind CSS 4          |
+| **Frontend (Mobile)** | TBD                                                              |
+| **Backend (APIs)**    | ASP.NET Core (.NET 10), Stripe SDK                               |
+| **Background**        | Azure Functions v4 (.NET 10 isolated worker)                     |
+| **Payments**          | Stripe (isolated in payment-api)                                 |
+| **Identity**          | Keycloakify / Azure Entra ID (infrastructure)                    |
+| **Database**          | PostgreSQL 17 (sidecar container), Entity Framework Core 10      |
+| **Messaging**         | Azure Service Bus (emulated via sidecar container)               |
+| **Storage**           | Azure Storage (emulated via Azurite sidecar container)           |
+| **NoSQL Database**    | Azure Cosmos DB (emulated via sidecar container)                 |
+| **Event Streaming**   | Azure Event Hubs (emulated via sidecar container)                |
+| **Configuration**     | Azure App Configuration (emulated via sidecar container)         |
+| **Caching**           | Redis 7 (sidecar container)                                      |
+| **Email**             | Mailpit — local SMTP server with web UI (sidecar container)      |
+| **Dev Environment**   | Dev Containers, Docker Compose, PNPM workspaces                  |
+| **Code Quality**      | ESLint, Prettier, `dotnet format`, Husky, Commitlint             |
+| **Testing (.NET)**    | xUnit, Shouldly, NSubstitute, Respawn, NetArchTest.Rules         |
+| **Testing (web)**     | Vitest, React Testing Library, @testing-library/jest-dom, MSW v2 |
 
 ## Getting Started
 

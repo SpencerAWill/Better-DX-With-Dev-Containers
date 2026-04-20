@@ -1,2 +1,21 @@
 node_modules
 .pnpm-store
+
+# .NET build output
+bin/
+obj/
+*.user
+
+# IDE caches
+.vs/
+.idea/
+
+# Test output
+TestResults/
+*.trx
+*.coverage
+coverage.*.xml
+
+# Vite / Vitest
+dist/
+.tanstack/
