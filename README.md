@@ -108,7 +108,7 @@ Assembly names follow `OrderingPlatform.{Domain}.{Role}` — e.g. `OrderingPlatf
 3. When prompted, click **"Reopen in Container"** (or run the command `Dev Containers: Reopen in Container`)
 4. The container builds with all dependencies — Node.js, .NET SDK, PostgreSQL sidecar, Redis, Keycloak, Mailpit, Service Bus emulator, Azurite (Azure Storage emulator), Cosmos DB emulator, Event Hubs emulator, App Configuration emulator, admin UI sidecar (EventHub Explorer), and CLI tools — ready to go
 
-Everything is configured automatically. No local SDK installs required.
+Everything is configured automatically. No local SDK installs required. The environment variable `DEVCONTAINER=true` is set inside the container so application code can detect the dev container context at runtime.
 
 ### Running the Apps
 

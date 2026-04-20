@@ -119,7 +119,7 @@ dotnet format                       # Formats all .cs files in solution
 
 The dev container uses Docker Compose with:
 
-- Primary container: Debian Bookworm base with Node.js + .NET SDK
+- Primary container: Debian Bookworm base with Node.js + .NET SDK; sets `DEVCONTAINER=true` environment variable
 - Sidecar: PostgreSQL 17 — one instance, separate database per domain (`Host=postgres;Port=5432;Database=<ordering_db|menu_db|payment_db|admin_db|kds_db|store_db>;Username=postgres;Password=postgres`)
 - Sidecar: Keycloak — local identity provider for development (`http://keycloak:8080`, admin console at `http://localhost:8180`, admin/admin)
 - Sidecar: Azure Service Bus emulator (backed by MSSQL) (`Endpoint=sb://servicebus-emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;`)
