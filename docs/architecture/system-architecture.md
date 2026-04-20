@@ -328,3 +328,68 @@ Apps follow a `{domain}-{platform}` pattern:
 Data libraries follow `{domain}-data` and map to `{domain}_db` databases.
 
 Frontend apps and their corresponding APIs share the same domain prefix (`ordering-web` + `ordering-api`, `admin-web` + `admin-api`), making the relationship between them clear.
+
+---
+
+## Architectural Decision Records
+
+Decisions made during system design that aren't obvious from the structure alone.
+
+### Menu API uses REST, not GraphQL
+
+The menu-api exposes a REST API rather than GraphQL. Reasons:
+
+- **Known consumers** — All clients are controlled (ordering-web, ordering-mobile, admin-web, kds-web). GraphQL's flexibility benefits unknown/third-party consumers, which don't exist here.
+- **Predictable access patterns** — Get full menu, get item by ID, get items by category, update an item. These map cleanly to REST resources with no over-fetching/under-fetching issues.
+- **Simpler caching** — REST responses are trivially cacheable by URL with HTTP cache headers or a Redis layer. GraphQL caching is more complex since every query shape can differ.
+- **Lower demo complexity** — REST is instantly understandable to anyone looking at the project.
+
+### API gateway is infrastructure, not an application
+
+An API gateway (routing, rate limiting, auth enforcement) was considered as a project in `apps/` and rejected. It belongs in infrastructure configuration (Azure API Management, NGINX, Envoy) rather than as application code we maintain. In the dev container, services are called directly on their own ports. In production, an infrastructure-level gateway would sit in front of the APIs.
+
+### Admin API is a long-running API, not serverless
+
+`admin-api` was considered as an Azure Functions project (serverless) since it has low traffic and sporadic usage. It was kept as an ASP.NET Core API because:
+
+- **Future real-time requirements** — Admin features may need WebSocket/SSE connections for live dashboards, order monitoring, or inventory alerts. Serverless doesn't support persistent connections.
+- **Simpler migration path** — Starting as an API and moving to serverless later is straightforward. The reverse (serverless to API for real-time support) is a larger rewrite.
+
+---
+
+## Open Design Decisions
+
+These gaps have been identified but not yet resolved. They should be addressed before or during implementation.
+
+### Circuit Breaker / Retry Strategy
+
+When a synchronous service-to-service call fails (e.g., ordering-api → payment-api), the system needs defined timeout, retry, and circuit breaker policies. Without these, a slow downstream service can cascade failures upstream. Needs a decision on:
+
+- Timeout values per call type
+- Retry policy (count, backoff strategy, idempotency requirements)
+- Circuit breaker thresholds (failure rate, recovery probe interval)
+- Library choice (likely Polly, which integrates with .NET's `HttpClientFactory`)
+
+### Observability
+
+With 13 services, 6 databases, and 2 deployment zones, debugging requires:
+
+- **Distributed tracing** — A correlation ID that follows a request across services. The `common` library includes correlation ID propagation middleware, but the tracing backend (Application Insights, OpenTelemetry collector, Jaeger) is not decided.
+- **Centralized logging** — Aggregation of logs from all services into a single queryable store.
+- **Health dashboards** — Especially for edge services where store-gateway health directly impacts store operations.
+
+### Data Retention and Cleanup
+
+- **kds_db** holds "active orders" — needs a cleanup policy for completed orders (archive or delete after N hours/days)
+- **ordering_db** accumulates full order history — needs a retention strategy at scale
+- **store_db** outbox events are transient — should be purged after successful forwarding
+- **Edge storage is limited** — retention policies are more aggressive at the edge than in the cloud
+
+### Conflict Resolution (Per-Entity Strategy)
+
+High-level rule: cloud state wins for menu/config, local state wins for orders created during outage. But edge cases need detailed resolution:
+
+- **Menu item deleted in cloud while edge is offline, and edge accepts an order for that item** — Accept the order (customer expectation) but flag it for review on sync
+- **Price changed in cloud, edge processes order at stale price** — Honor the price the customer saw (edge price at time of order)
+- **Concurrent orders from cloud and edge reference the same inventory** — Last-write-wins with event timestamp ordering, or reservation-based model
+- Per-entity resolution strategies should be documented in detail before implementing store-gateway sync logic
